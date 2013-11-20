@@ -63,7 +63,11 @@ class RelayPlugin
   def send_relay(m)
     $bots.each do |network, bot|
       unless bot.irc.network == @bot.irc.network
-        bot.irc.send("PRIVMSG #bnc.im :#{m}")
+        begin
+          bot.irc.send("PRIVMSG #bnc.im :#{m}")
+        rescue => e
+          # pass
+        end
       end
     end
   end

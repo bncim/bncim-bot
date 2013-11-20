@@ -182,6 +182,15 @@ class RequestPlugin
         return
       end
     end
+
+    $config["blacklist"].each do |entry|
+      if server =~ Regexp.new(entry)
+        m.reply "Error: the server #{server} appears to be on our " \ +
+                "network blacklist. Please see http://bnc.im/blacklist" \ +
+                " or contact an operator for more details."
+        return
+      end
+    end
     
     r = RequestDB.create(m.user.mask, username, email, server,\
                          port, @bot.irc.network.name)

@@ -14,6 +14,7 @@ class RelayPlugin
   listen_to :message, method: :relay
   listen_to :leaving, method: :relay_part
   listen_to :join, method: :relay_join
+  listen_to :nick, method: :relay_nick
   
   
   def relay(m)
@@ -25,6 +26,14 @@ class RelayPlugin
     else
       message = "#{network} <#{m.user.nick}> #{m.message}"
     end
+    send_relay(message)
+  end
+  
+  def relay_nick(m)
+    return unless m.channel == "#bnc.im"
+    return if m.user.nick == @bot.nick
+    network = Format(:bold, "[#{@bot.irc.network.name}]")
+    message = "#{network} - #{m.user.last_nick} is now known as #{m.user.nick}."
     send_relay(message)
   end
   

@@ -396,7 +396,11 @@ class RequestPlugin
 
   def allmsg(m)
     $bots.each do |network, bot|
-      bot.irc.send("PRIVMSG #bnc.im :#{m}")
+      begin
+        bot.irc.send("PRIVMSG #bnc.im :#{m}")
+      rescue => e
+        # pass
+      end
     end
   end
   

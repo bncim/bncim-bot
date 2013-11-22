@@ -42,9 +42,9 @@ class RelayPlugin
     return if m.user.nick == @bot.nick
     network = Format(:bold, "[#{@bot.irc.network.name}]")
     if m.command == "PART"
-      action = "parted #bnc.im"
+      action = "parted #bnc.im (#{m.message})"
     elsif m.command == "QUIT"
-      action = "quit"
+      action = "quit (#{m.message})"
     else
       action = "left #bnc.im"
     end

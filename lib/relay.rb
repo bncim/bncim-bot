@@ -30,7 +30,7 @@ class RelayPlugin
   end
   
   def relay_nick(m)
-    return unless m.channel == "#bnc.im"
+    return unless m.user.channels.include? Channel("#bnc.im")
     return if m.user.nick == @bot.nick
     network = Format(:bold, "[#{@bot.irc.network.name}]")
     message = "#{network} - #{m.user.last_nick} is now known as #{m.user.nick}."

@@ -272,7 +272,7 @@ class RequestPlugin
 
   def unban(m, target)
     return unless m.channel == "#bnc.im-admin"
-    $bots.each_value { |b| b.irc.send ("MODE #bnc.im +b #{target}") }
+    $bots.each_value { |b| b.irc.send ("MODE #bnc.im -b #{target}") }
     m.reply "done!"
   end
   

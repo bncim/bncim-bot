@@ -151,6 +151,9 @@ class RequestPlugin
   match "web", method: :web
   match "setup", method: :setup
 
+  match /ban (\S+)/, method: :ban
+  match /unban (\S+)/, method: :unban
+
   match /verify\s+(\d+)\s+(\S+)/, method: :verify
   
   match /topic (.+)/, method: :topic
@@ -258,6 +261,18 @@ class RequestPlugin
     $zncs.each_value do |zncbot|
       zncbot.irc.send("PRIVMSG *status :broadcast [Broadcast Message] #{text}")
     end
+    m.reply "done!"
+  end
+
+  def ban(m, target)
+    return unless m.channel == "#bnc.im-admin"
+    $bots.each { |b| b.irc.send ("MODE #bnc.im +b #{target}") }
+    m.reply "done!"
+  end
+
+  def unban(m, target)
+    return unless m.channel == "#bnc.im-admin"
+    $bots.each { |b| b.irc.send ("MODE #bnc.im +b #{target}") }
     m.reply "done!"
   end
   

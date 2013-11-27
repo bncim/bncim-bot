@@ -76,6 +76,26 @@ class Mail
 
     self.send(to_addr, msg)
   end
+  
+  def self.send_approved_admin(to_addr, id, admin)
+    msgstr = <<-END_OF_MESSAGE
+      From: bnc.im bot <no-reply@bnc.im>
+      To: #{to_addr}
+      Reply-to: admin@bnc.im
+      Subject: bnc.im account request approved - ##{id}
+      Date: #{Time.now.ctime}
+      Message-Id: <#{UUID.generate}@bnc.im>
+
+      The bnc.im request ##{id} has been approved by #{admin}.
+      
+      Regards,
+      bnc.im bot
+    END_OF_MESSAGE
+
+    msg = msgstr.lines.map { |l| l.strip }.join("\r\n")
+
+    self.send(to_addr, msg)
+  end
 
   def self.send_approved(to_addr, server, user, pass, network)
     addr = $config["zncservers"][server]["addr"]

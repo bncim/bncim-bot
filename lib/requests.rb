@@ -336,8 +336,11 @@ class RequestPlugin
       $zncs[server].irc.send(msg_to_control("Reconnect #{r.username} interlinked"))
     end
     
-    Mail.send_approved(r.email, server, r.username, password, netname)
     RequestDB.approve(r.id)
+    Mail.send_approved(r.email, server, r.username, password, netname)
+    $config["notifymail"].each do |email|
+      Mail.send_approved_admin(email, r.id, m.user.mask.to_s)
+    end
     allmsg("#{r.source.to_s.split("!")[0]}: your request ##{r.id} has been approved :)")
     adminmsg("Request ##{id} approved to #{server} (#{ip}) by #{m.user}.")
   end

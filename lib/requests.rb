@@ -205,6 +205,8 @@ class RequestPlugin
                                
     m.reply "Your request has been submitted. Please check your " + \
             "email for information on how to proceed."
+
+    adminmsg("Request ##{r.id} created and pending email verification.")
   end
 
   def verify(m, id, key)

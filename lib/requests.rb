@@ -341,7 +341,6 @@ class RequestPlugin
     $config["notifymail"].each do |email|
       Mail.send_approved_admin(email, r.id, m.user.mask.to_s)
     end
-    allmsg("#{r.source.to_s.split("!")[0]}: your request ##{r.id} has been approved :)")
     adminmsg("Request ##{id} approved to #{server} (#{ip}) by #{m.user}.")
   end
   

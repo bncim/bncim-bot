@@ -323,9 +323,15 @@ class RequestPlugin
     
     Thread.new do
       sleep 3
-      $zncs[server].irc.send(msg_to_control("AddNetwork #{r.username} #{netname}"))
+      unless netname =~ /interlinked/i
+        $zncs[server].irc.send(msg_to_control("AddNetwork #{r.username} #{netname}"))
+        $zncs[server].irc.send(msg_to_control("AddServer #{r.username} #{netname} #{r.server} #{r.port}"))
+      end
       $zncs[server].irc.send(msg_to_control("SetNetwork Nick #{r.username} #{netname} #{r.username}"))
-      $zncs[server].irc.send(msg_to_control("AddServer #{r.username} #{netname} #{r.server} #{r.port}"))
+      $zncs[server].irc.send(msg_to_control("SetNetwork Nick #{r.username} interlinked #{r.username}"))
+      $zncs[server].irc.send(msg_to_control("SetNetwork AltNick #{r.username} interlinked #{r.username}_"))
+      $zncs[server].irc.send(msg_to_control("SetNetwork Ident #{r.username} interlinked #{r.username}"))
+      $zncs[server].irc.send(msg_to_control("Reconnect #{r.username} interlinked"))
     end
     
     Mail.send_approved(r.email, server, r.username, password)

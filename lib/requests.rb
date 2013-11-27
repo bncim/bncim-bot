@@ -153,6 +153,7 @@ class RequestPlugin
 
   match /ban (\S+)/, method: :ban
   match /unban (\S+)/, method: :unban
+  match /kick (\S+) (.+)$/, method: :kick
 
   match /verify\s+(\d+)\s+(\S+)/, method: :verify
   
@@ -266,14 +267,20 @@ class RequestPlugin
 
   def ban(m, target)
     return unless m.channel == "#bnc.im-admin"
-    $bots.each_value { |b| b.irc.send ("MODE #bnc.im +b #{target}") }
+    $bots.each_value { |b| b.irc.send("MODE #bnc.im +b #{target}") }
     m.reply "done!"
   end
 
   def unban(m, target)
     return unless m.channel == "#bnc.im-admin"
-    $bots.each_value { |b| b.irc.send ("MODE #bnc.im -b #{target}") }
+    $bots.each_value { |b| b.irc.send("MODE #bnc.im -b #{target}") }
     m.reply "done!"
+  end
+
+  def kick(m, target, reason = "")
+    return unless m.channel == "#bnc.im-admin"
+    $bots.each_value { |b| b.irc.send("KICK #bnc.im #{target} :#{reason}") }
+    m.reply "kicked #{target} in all channels (#{reason})"
   end
   
   def approve(m, id, ip)

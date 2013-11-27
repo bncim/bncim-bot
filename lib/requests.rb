@@ -459,8 +459,7 @@ class RequestPlugin
       return
     end
     m.reply "#{Format(:bold, "Syntax: !request <user> <email> <server> [+]<port> [bnc.im server]")}. Parameters in brackets are not required. A + before the port denotes SSL. This command can be issued in a private message."
-    m.reply "For example, a user called bncim-lover with an email of ilovebncs@mail.com who wants a bouncer for Interlinked on our chicago server would issue: " + \
-             Format(:bold, "!request bncim-lover ilovebncs@mail.com irc.interlinked.me 6667 chicago")
+    m.reply Format(:bold, "Example: !request bncim-lover ilovebncs@mail.com irc.interlinked.me 6667")
   end
 
   def web(m)

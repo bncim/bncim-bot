@@ -460,7 +460,7 @@ class RequestPlugin
       m.reply "!pending | !reqinfo <id> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip>"
       return
     end
-    m.reply "#{Format(:bold, "Syntax: !request <user> <email> <server> [+]<port> [bnc.im server]")}. Parameters in brackets are not required. A + before the port denotes SSL. This command can be issued in a private message."
+    m.reply "#{Format(:bold, "Syntax: !request <user> <email> <server> [+]<port> [bnc.im server]")}. Parameters in brackets are not required. A + before the port denotes SSL. This command can be issued in a private message. Please use a valid email, it is verified."
     m.reply Format(:bold, "Example: !request bncim-lover ilovebncs@mail.com irc.interlinked.me 6667")
   end
 

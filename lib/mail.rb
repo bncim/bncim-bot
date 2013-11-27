@@ -77,7 +77,7 @@ class Mail
     self.send(to_addr, msg)
   end
 
-  def self.send_approved(to_addr, server, user, pass)
+  def self.send_approved(to_addr, server, user, pass, network)
     addr = $config["zncservers"][server]["addr"]
     webpanel = $config["zncservers"][server]["public"]["panel"]
     port = $config["zncservers"][server]["public"]["port"]
@@ -106,10 +106,18 @@ class Mail
       In order to connect to your new account, you will need to connect
       your IRC client to #{addr} on port #{port} (or #{sslport} for SSL) 
       and configure your client to send your bnc.im username and password 
-      together in the server password field, seperated by a colon,
-      like so: 
+      together with the network you signed up for, in the server password
+      field like so: 
       
-      #{user}:#{pass}
+      #{user}/#{network}:#{pass}
+
+      Additionally, we have set up a second bouncer which will connect to
+      our support channel, #bnc.im on Interlinked, should you ever need
+      help with bnc.im. To connect to this, enter the following in your
+      server password field in your IRC client (you may use this at the 
+      same time as your registered network):
+
+      #{user}/interlinked:#{pass}
       
       If you need any help, please do not hestitate to join our IRC 
       channel: irc.interlinked.me #bnc.im - or connect to our webchat

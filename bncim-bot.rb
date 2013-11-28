@@ -14,6 +14,7 @@ require 'cinch'
 require 'cinch/plugins/identify'
 require 'yaml'
 require 'lib/requests'
+require 'lib/admin'
 require 'lib/relay'
 require 'lib/logger'
 require 'lib/mail'
@@ -48,6 +49,7 @@ $config["servers"].each do |name, server|
           :password => $config["bot"]["saslpass"],
           :type     => :nickserv,
         }
+        c.plugins.plugins << AdminPlugin if $config["admin"]["network"] == name
       end
     end
   end

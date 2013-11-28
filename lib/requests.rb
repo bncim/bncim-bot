@@ -156,6 +156,7 @@ class RequestPlugin
   match "help", method: :help
   
   def servers(m)
+    return if m.channel == "#bnc.im-admin"
     m.reply "I am connected to the following IRC servers: #{$config["servers"].keys[0..-2].join(", ")} and #{$config["servers"].keys[-1]}."
     m.reply "I am connected to the following bnc.im servers: #{$config["zncservers"].keys[0..-2].join(", ")} and #{$config["zncservers"].keys[-1]}."
   end

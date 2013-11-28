@@ -42,6 +42,7 @@ $config["servers"].each do |name, server|
         c.sasl.username = $config["bot"]["saslname"]
         c.sasl.password = $config["bot"]["saslpass"]
         c.plugins.plugins = [RequestPlugin, RelayPlugin]
+        c.plugins.plugins << AdminPlugin if $config["admin"]["network"] == name
       else
         c.plugins.plugins = [RelayPlugin, RequestPlugin, Cinch::Plugins::Identify]
         c.plugins.options[Cinch::Plugins::Identify] = {
@@ -53,9 +54,9 @@ $config["servers"].each do |name, server|
       end
     end
   end
-	bot.loggers.clear
+  bot.loggers.clear
   bot.loggers << BNCLogger.new(name, File.open("log/irc-#{name}.log", "a"))
-	bot.loggers << BNCLogger.new(name, STDOUT)
+  bot.loggers << BNCLogger.new(name, STDOUT)
   bot.loggers.level = :info
   if $config["admin"]["network"] == name
     $adminbot = bot

@@ -255,4 +255,8 @@ class AdminPlugin
        Format(:bold, "#{r.reqserver || "N/A"}"), 
        Format(:bold, r.confirmed?.to_s), Format(:bold, r.approved?.to_s)]
   end
+  
+  def adminmsg(text)
+    $adminbot.irc.send("PRIVMSG #bnc.im-admin :#{text}")
+  end
 end

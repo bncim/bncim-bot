@@ -180,12 +180,17 @@ class RequestPlugin
       end
     end
 
-    $config["blacklist"].each do |entry|
+    $config["blacklist"].each do |entry, reason|
       if server =~ /#{entry}/i
-        m.reply "Error: the server #{server} appears to be on our " + \
-                "network blacklist. Please see http://bnc.im/blacklist" + \
-                ".html or contact an operator for more details."
-        return
+        if reason.nil?
+          m.reply "Error: the server #{server} appears to be on our " + \
+                  "network blacklist. Please see http://bnc.im/blacklist" + \
+                  ".html or contact an operator for more details."
+          return
+        else
+          m.reply "Error: #{reason}"
+          return
+        end
       end
     end
     

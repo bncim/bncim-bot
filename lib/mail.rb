@@ -40,6 +40,7 @@ class Mail
 
       Regards,
       bnc.im team
+      admin@bnc.im
 			http://bnc.im/
     END_OF_MESSAGE
     
@@ -131,20 +132,14 @@ class Mail
       
       #{user}/#{network}:#{pass}
 
-      Additionally, we have set up a second bouncer which will connect to
-      our support channel, #bnc.im on Interlinked, should you ever need
-      help with bnc.im. To connect to this, enter the following in your
-      server password field in your IRC client (you may use this at the 
-      same time as your registered network):
-
-      #{user}/interlinked:#{pass}
-      
       If you need any help, please do not hestitate to join our IRC 
       channel: irc.interlinked.me #bnc.im - or connect to our webchat
-      at https://bnc.im/webchat.html.
+      at https://bnc.im/webchat.html. We also have some setup information
+      at http://bnc.im/setup.html.
       
       Regards,
       bnc.im team
+      admin@bnc.im
 			http://bnc.im/
     END_OF_MESSAGE
     

@@ -4,7 +4,8 @@ class AdminPlugin
   match /unban (\S+)/, method: :unban
   match /kick (\S+) (.+)$/, method: :kick
   match /topic (.+)/, method: :topic
-  match /approve\s+(\d+)\s+(\S+)/, method: :approve
+  match /approve\s+(\d+)\s+(\S+)\s*$/, method: :approve, group: :approve
+  match /approve\s+(\d+)\s+(\S+)\s+(.+)\s*$/, method: :approve, group: :approve
   match /delete\s+(\d+)/, method: :delete
   match /reqinfo\s+(\d+)/, method: :reqinfo
   match "pending", method: :pending
@@ -71,7 +72,7 @@ class AdminPlugin
     m.reply "kicked #{target} in all channels (#{reason})"
   end
   
-  def approve(m, id, ip)
+  def approve(m, id, ip, addr = nil)
     return unless m.channel == "#bnc.im-admin"
     unless RequestDB.requests.has_key?(id.to_i)
       m.reply "Error: request ##{id} not found."
@@ -112,7 +113,11 @@ class AdminPlugin
     Thread.new do
       sleep 3
       $zncs[server].irc.send(msg_to_control("AddNetwork #{r.username} #{netname}"))
-      $zncs[server].irc.send(msg_to_control("AddServer #{r.username} #{netname} #{r.server} #{r.port}"))
+      if addr.nil?
+        $zncs[server].irc.send(msg_to_control("AddServer #{r.username} #{netname} #{r.server} #{r.port}"))
+      else
+        $zncs[server].irc.send(msg_to_control("AddServer #{r.username} #{netname} #{addr}"))
+      end
       $zncs[server].irc.send(msg_to_control("SetNetwork Nick #{r.username} #{netname} #{r.username}"))
     end
     

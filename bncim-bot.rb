@@ -34,9 +34,9 @@ $config["servers"].each do |name, server|
       c.server = server["server"]
       c.ssl.use = server["ssl"]
       c.port = server["port"]
-      c.channels = $config["bot"]["channels"].map {|c| c = "#" + c}
+      c.channels = $config["bot"]["channels"]
       if $config["admin"]["network"] == name
-        c.channels << "##{$config["admin"]["channel"]}"
+        c.channels << $config["admin"]["channel"]
       end
       unless server["sasl"] == false
         c.sasl.username = $config["bot"]["saslname"]
@@ -46,7 +46,6 @@ $config["servers"].each do |name, server|
       else
         c.plugins.plugins = [RelayPlugin, RequestPlugin, Cinch::Plugins::Identify]
         c.plugins.options[Cinch::Plugins::Identify] = {
-          :username => $config["bot"]["saslname"],
           :password => $config["bot"]["saslpass"],
           :type     => :nickserv,
         }

@@ -99,6 +99,7 @@ class RelayPlugin
   def relay_quit(m)
     return if ignored_nick?(m.user.nick.to_s)
     return if m.user.nick == @bot.nick
+    return if m.user.nick =~ /^bncim/
     netname = @bot.irc.network.name.to_s.downcase
     network = Format(:bold, "[#{colorise(netname)}]")
     message = "#{network} - #{colorise(m.user.nick)} has quit (#{m.message})"

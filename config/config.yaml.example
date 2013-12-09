@@ -7,8 +7,8 @@ bot:
   realname: bnc.im administration bot [#bnc.im]
   saslname: bncim
   saslpass: 
-  channels:
-    - bnc.im
+  nohighlights: true
+
 zncservers:
   miami:
     addr: mia1.bnc.im
@@ -34,18 +34,23 @@ servers:
     nick: bncim
     ssl: true
     password: example
+    channel: "#bnc.im"
+
   staticbox:
     server: irc.staticbox.net
     port: 6697
     nick: bncim
     ssl: true
     password: example
+    channel: "#bnc.im"
+
   alphachat:
     server: irc.alphachat.net
     port: 6697
     nick: bncim
     ssl: true
     password: example
+    channel: "#bnc.im"
 admin:
   network: staticbox
   channel: bnc.im-admin
@@ -57,3 +62,9 @@ mail:
 requestdb: /path/to/data/request-db
 notifymail:
   - mail@mail.com
+
+ignore:
+  ignoreprivmsg: false
+
+  nicks:
+    - ChanServ

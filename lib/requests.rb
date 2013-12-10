@@ -193,6 +193,11 @@ class RequestPlugin
         end
       end
     end
+
+    unless email.include? "@"
+      m.reply "Error: that email is not valid."
+      return
+    end
     
     r = RequestDB.create(m.user.mask, username, email, server,\
                          port, @bot.irc.network.name)

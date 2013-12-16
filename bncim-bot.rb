@@ -34,7 +34,7 @@ $config["servers"].each do |name, server|
       c.server = server["server"]
       c.ssl.use = server["ssl"]
       c.port = server["port"]
-      c.channels = $config["bot"]["channels"]
+      c.channels = $config["bot"]["channels"].dup
       if $config["admin"]["network"] == name
         c.channels << $config["admin"]["channel"]
       end

@@ -8,6 +8,7 @@ class AdminPlugin
   match /approve\s+(\d+)\s+(\S+)\s+(.+)\s*$/, method: :approve, group: :approve
   match /delete\s+(\d+)/, method: :delete
   match /reqinfo\s+(\d+)/, method: :reqinfo
+  match /requser\s+(\S+)/, method: :requser
   match "pending", method: :pending
   match /fverify\s+(\d+)/, method: :fverify
   match "servers", method: :servers
@@ -185,6 +186,17 @@ class AdminPlugin
     
     adminmsg("Request ##{id} email verified by #{m.user}.")
     adminmsg("#{Format(:red, "[NEW REQUEST]")} #{format_status(r)}")
+  end
+
+  def requser(m, username)
+    return unless m.channel == "#bnc.im-admin"
+    
+    RequestDB.requests.each do |key, req|
+      if req.username.to_s.downcase == username.downcase
+        m.reply format_status(req)
+      end
+    end
+    m.reply "End of results."
   end
   
   def reqinfo(m, id)

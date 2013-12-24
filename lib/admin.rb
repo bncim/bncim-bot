@@ -14,6 +14,7 @@ class AdminPlugin
   match "servers", method: :servers
   match /broadcast (.+)/, method: :broadcast
   match /serverbroadcast (\w+) (.+)/, method: :serverbroadcast
+  match /cp (\w+) (.+)/, method: :cp
   
   match "help", method: :help
 
@@ -52,6 +53,12 @@ class AdminPlugin
     end
     
     $zncs[server.downcase].irc.send("PRIVMSG *status :broadcast [Broadcast Message] #{text}")
+    m.reply "done!"
+  end
+
+  def cp(m, server, command)
+    return unless m.channel == "#bnc.im-admin"
+    $zncs[server.downcase].irc.send("PRIVMSG *controlpanel :#{command}")
     m.reply "done!"
   end
 

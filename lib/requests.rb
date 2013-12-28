@@ -62,6 +62,16 @@ class RequestDB
     end
     return false
   end
+  
+  def self.ignored?(mask)
+    ignored = $config["ignored"]
+    ignored.each do |m|
+      if Cinch::Mask.new(m) =~ mask
+        return true
+      end
+    end
+    return false
+  end
 
   def self.username_used?(user)
     @@requests.each_value do |request|
@@ -162,6 +172,7 @@ class RequestPlugin
   end
   
   def request(m, username, email, server, port, reqserver = nil)
+    return if RequestDB.ignored?(m.user.mask)
     if RequestDB.email_used?(email)
       m.reply "Sorry, that email has already been used. Please contact an " + \
               "operator if you need help."

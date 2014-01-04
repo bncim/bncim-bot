@@ -32,7 +32,7 @@ class Mail
       Date: #{Time.now.ctime}
       Message-Id: <#{UUID.generate}@bnc.im>
 
-      Someone, hopefully you, requested an account in the http://bnc.im IRC channel. If this was you, please send
+      Someone, hopefully you, requested an account in the http://bnc.im IRC channel. Once you have read and agreed to our Terms of Service (located at https://bnc.im/terms-of-service.html), please send
 
       !verify #{id} #{code} 
 

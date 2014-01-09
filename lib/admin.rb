@@ -10,6 +10,7 @@ class AdminPlugin
   match /reqinfo\s+(\d+)/, method: :reqinfo
   match /requser\s+(\S+)/, method: :requser
   match "pending", method: :pending
+  match "unconfirmed", method: :unconfirmed
   match /fverify\s+(\d+)/, method: :fverify
   match "servers", method: :servers
   match /broadcast (.+)/, method: :broadcast
@@ -144,7 +145,7 @@ class AdminPlugin
   def help(m)
     if m.channel == "#bnc.im-admin"
       m.reply "Admin commands:"
-      m.reply "!pending | !reqinfo <id> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask>"
+      m.reply "!unconfirmed | !pending | !reqinfo <id> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask>"
     end
   end
   
@@ -249,7 +250,9 @@ class AdminPlugin
     
     pending = Array.new
     RequestDB.requests.each_value do |r|
-      pending << r unless r.approved?
+      if r.confirmed?
+        pending << r unless r.approved?
+      end
     end
     
     if pending.empty?
@@ -260,6 +263,28 @@ class AdminPlugin
     m.reply "#{pending.size} pending request(s):"
     
     pending.each do |request|
+      m.reply format_status(request)
+    end
+  end
+  
+  def unconfirmed(m)
+    return unless m.channel == "#bnc.im-admin"
+    
+    unconfirmed = Array.new
+    RequestDB.requests.each_value do |r|
+      unless r.confirmed?
+        unconfirmed << r unless r.approved?
+      end
+    end
+    
+    if unconfirmed.empty?
+      m.reply "No unconfirmed requests. Try !pending?"
+      return
+    end
+    
+    m.reply "#{unconfirmed.size} unconfirmed request(s):"
+    
+    unconfirmed.each do |request|
       m.reply format_status(request)
     end
   end

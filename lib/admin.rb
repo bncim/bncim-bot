@@ -21,7 +21,7 @@ class AdminPlugin
   
   match "help", method: :help
   
-  def addnetwork(server, username, netname, addrstr)
+  def addnetwork(m, server, username, netname, addrstr)
     return unless m.channel == "#bnc.im-admin"
     server.downcase!
     netname.downcase!
@@ -37,7 +37,7 @@ class AdminPlugin
     m.reply "done."
   end
   
-  def delnetwork(server, username, netname)
+  def delnetwork(m, server, username, netname)
     return unless m.channel == "#bnc.im-admin"
     server.downcase!
     netname.downcase!

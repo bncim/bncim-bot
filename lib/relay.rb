@@ -22,7 +22,7 @@ class RelayPlugin
   listen_to :mode, method: :relay_mode
   
   match "nicks", method: :nicks
-  match "rehash", method: :rehash
+  #match "rehash", method: :rehash
   
   def is_admin?(user)
     return false if $config["admins"].nil?
@@ -203,6 +203,7 @@ class RelayPlugin
     return if $config["bot"]["privmsgonly"]
     return if ignored_nick?(m.user.nick.to_s)
     return if m.user.nick == @bot.nick
+    return if m.user.nick =~ /^bncim\-/i
     netname = @bot.irc.network.name.to_s.downcase
     network = Format(:bold, "[#{colorise(netname)}]")
     message = "#{network} - #{colorise(m.user.nick)} has quit (#{m.message})"

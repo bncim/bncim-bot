@@ -30,7 +30,7 @@ class AdminPlugin
       return
     end
     $zncs[server].irc.send(msg_to_control("AddNetwork #{username} #{netname}"))
-    $zncs[server].irc.send(msg_to_control("AddServer #{username} #{netname} #{addr}"))
+    $zncs[server].irc.send(msg_to_control("AddServer #{username} #{netname} #{addrstr}"))
     if $config["servers"].has_key? netname
       $zncs[server].irc.send(msg_to_control("AddChan #{username} #{netname} #{$config["servers"][netname]["channel"]}"))
     end

@@ -16,8 +16,38 @@ class AdminPlugin
   match /broadcast (.+)/, method: :broadcast
   match /serverbroadcast (\w+) (.+)/, method: :serverbroadcast
   match /cp (\w+) (.+)/, method: :cp
+  match /addnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s+(.+)\s*$/, method: :addnetwork
+  match /delnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnetwork
   
   match "help", method: :help
+  
+  def addnetwork(server, username, netname, addrstr)
+    return unless m.channel == "#bnc.im-admin"
+    server.downcase!
+    netname.downcase!
+    unless $zncs.has_key? server
+      m.reply "Server \"#{server}\" not found."
+      return
+    end
+    $zncs[server].irc.send(msg_to_control("AddNetwork #{username} #{netname}"))
+    $zncs[server].irc.send(msg_to_control("AddServer #{username} #{netname} #{addr}"))
+    if $config["servers"].has_key? netname
+      $zncs[server].irc.send(msg_to_control("AddChan #{username} #{netname} #{$config["servers"][netname]["channel"]}"))
+    end
+    m.reply "done."
+  end
+  
+  def delnetwork(server, username, netname)
+    return unless m.channel == "#bnc.im-admin"
+    server.downcase!
+    netname.downcase!
+    unless $zncs.has_key? server
+      m.reply "Server \"#{server}\" not found."
+      return
+    end
+    $zncs[server].irc.send(msg_to_control("DelNetwork #{username} #{netname}"))
+    m.reply "done!"
+  end
 
   def topic(m, topic)
     return unless m.channel == "#bnc.im-admin"
@@ -49,17 +79,27 @@ class AdminPlugin
   
   def serverbroadcast(m, server, text)
     return unless m.channel == "#bnc.im-admin"
+    server.downcase!
+    unless $zncs.has_key?
+      m.reply "Server \"#{server}\" not found."
+      return
+    end
     $bots.each_value do |bot|
       bot.irc.send("PRIVMSG #bnc.im :#{Format(:bold, "[INFO FOR #{server.upcase} USERS]")} #{text}")
     end
     
-    $zncs[server.downcase].irc.send("PRIVMSG *status :broadcast [Broadcast Message] #{text}")
+    $zncs[server].irc.send("PRIVMSG *status :broadcast [Broadcast Message] #{text}")
     m.reply "done!"
   end
 
   def cp(m, server, command)
     return unless m.channel == "#bnc.im-admin"
-    $zncs[server.downcase].irc.send("PRIVMSG *controlpanel :#{command}")
+    server.downcase!
+    unless $zncs.has_key? server
+      m.reply "Server \"#{server}\" not found."
+      return
+    end
+    $zncs[server].irc.send("PRIVMSG *controlpanel :#{command}")
     m.reply "done!"
   end
 
@@ -128,6 +168,9 @@ class AdminPlugin
         $zncs[server].irc.send(msg_to_control("AddServer #{r.username} #{netname} #{addr}"))
       end
       $zncs[server].irc.send(msg_to_control("SetNetwork Nick #{r.username} #{netname} #{r.username}"))
+      if $config["servers"].has_key? netname.downcase
+        $zncs[server].irc.send(msg_to_control("AddChan #{r.username} #{netname} #{$config["servers"][netname.downcase]["channel"]}"))
+      end
     end
     
     RequestDB.approve(r.id)
@@ -146,6 +189,7 @@ class AdminPlugin
     if m.channel == "#bnc.im-admin"
       m.reply "Admin commands:"
       m.reply "!unconfirmed | !pending | !reqinfo <id> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask>"
+      m.reply "!addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname>"
     end
   end
   

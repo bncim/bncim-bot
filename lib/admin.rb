@@ -80,7 +80,7 @@ class AdminPlugin
   def serverbroadcast(m, server, text)
     return unless m.channel == "#bnc.im-admin"
     server.downcase!
-    unless $zncs.has_key?
+    unless $zncs.has_key? server
       m.reply "Server \"#{server}\" not found."
       return
     end

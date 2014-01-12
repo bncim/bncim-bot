@@ -19,96 +19,8 @@ class RelayPlugin
   listen_to :kick, method: :relay_kick
   listen_to :join, method: :relay_join
   listen_to :nick, method: :relay_nick
-  listen_to :mode, method: :relay_mode
   
   match "nicks", method: :nicks
-  #match "rehash", method: :rehash
-  
-  def is_admin?(user)
-    return false if $config["admins"].nil?
-    if $config["admins"].class == String
-      if Cinch::Mask.new($config["admins"]) =~ user.mask
-        return true
-      end
-    elsif $config["admins"].class == Array
-      $config["admins"].each do |m|
-        if Cinch::Mask.new(m) =~ user.mask
-          return true
-        else
-          next
-        end
-      end
-    end
-    return false
-  end
-  
-  def rehash(m)
-    return unless is_admin?(m.user)
-    old_config = $config
-    new_config = YAML.load_file("config/config.yaml")
-    
-    # Make server names all downcase
-    servers = {}
-    new_config["servers"].each do |k, v|
-      servers.merge!({k.downcase => v})
-    end
-    new_config["servers"] = servers
-
-    # Make ignore names all downcase
-    names = new_config["ignore"]["nicks"].map { |v| v.downcase }
-    new_config["ignore"]["nicks"] = names
-    
-    old_config["servers"].each do |name, server|
-      if new_config["servers"].has_key? name
-        $bots[name].nick = new_config["servers"][name]["nick"] || new_config["bot"]["nick"]
-        $bots[name].channels.each do |c|
-          c.part unless c.name.to_s =~ /#{new_config["servers"][name]["channel"]}/
-          $bots[name].Channel(new_config["servers"][name]["channel"]).join
-        end
-      else
-        $bots[name].quit
-        $bots.delete name
-      end
-    end
-    
-    new_config["servers"].each do |name, server|
-      next if old_config["servers"].has_key? name
-      bot = Cinch::Bot.new do
-        configure do |c|
-          c.nick = server["nick"] || new_config["bot"]["nick"]
-          c.user = server["user"] || new_config["bot"]["user"]
-          c.realname = server["realname"] || new_config["bot"]["realname"]
-          c.server = server["server"]
-          c.ssl.use = server["ssl"]
-          c.port = server["port"]
-          c.channels = [server["channel"]]
-          opts = server["msgspersec"] || new_config["bot"]["msgspersec"] || nil
-          c.messages_per_second = opts unless opts.nil?
-          nsname = server["nickservname"] || new_config["bot"]["nickservname"] || c.nick
-          unless server["sasl"] == false
-            c.sasl.username = nsname
-            c.sasl.password = server["nickservpass"] || new_config["bot"]["nickservpass"]
-            c.plugins.plugins = [RelayPlugin]
-          else
-            c.plugins.plugins = [RelayPlugin, Cinch::Plugins::Identify]
-            c.plugins.options[Cinch::Plugins::Identify] = {
-              :password => new_config["bot"]["nickservpass"],
-              :type     => :nickserv,
-            }
-          end
-        end
-      end
-      bot.loggers.clear
-      bot.loggers << RelayLogger.new(name, File.open("log/irc-#{name}.log", "a"))
-      bot.loggers << RelayLogger.new(name, STDOUT)
-      bot.loggers.level = :info
-      $bots[name] = bot
-      $threads << Thread.new { bot.start }
-    end
-    
-    $config = new_config
-    m.reply "done!"
-  end
   
   def ignored_nick?(nick)
     if $config["ignore"]["nicks"].include? nick.downcase
@@ -137,27 +49,6 @@ class RelayPlugin
       message = "#{network} <#{nick}> #{m.message}"
     end
     
-    send_relay(message)
-  end
-  
-  def relay_mode(m)
-    return if $config["bot"]["privmsgonly"]
-    return if m.params.nil?
-    return if @bot.irc.network.name.nil? #not connected yet
-    netname = @bot.irc.network.name.to_s.downcase
-    return unless m.params[0].downcase == $config["servers"][netname]["channel"].downcase
-    if m.user.nil?
-      user = m.raw.split(":")[1].split[0]
-    else
-      return if ignored_nick?(m.user.nick.to_s)
-      if $config["bot"]["nohostmasks"]
-        user = colorise(m.user.nick)
-      else
-        user = "#{colorise(m.user.nick)} (#{m.user.mask.to_s.split("!")[1]})"
-      end
-    end
-    network = Format(:bold, "[#{colorise(netname)}]")
-    message = "#{network} - #{user} set mode #{m.params[1..-1].join(" ")} on #{m.params[0]}"
     send_relay(message)
   end
   

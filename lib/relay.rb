@@ -19,8 +19,28 @@ class RelayPlugin
   listen_to :kick, method: :relay_kick
   listen_to :join, method: :relay_join
   listen_to :nick, method: :relay_nick
+  listen_to :join, method: :relay_connect
+  listen_to :leaving, method: :relay_disconnect
   
   match "nicks", method: :nicks
+
+  def relay_connect(m)
+    elapsed_time = Time.now.to_i - $start
+    return if elapsed_time < 60
+    netname = @bot.irc.network.name.to_s.downcase
+    return if m.channel.nil?
+    return unless m.channel.name.downcase == $config["servers"][netname]["channel"].downcase
+    return unless m.user.nick == @bot.nick
+    network = Format(:bold, "[#{colorise(netname)}]")
+    send_relay("#{network} *** Relay joined to #{m.channel.name}")
+  end
+	  
+  def relay_disconnect(m, user)
+    return unless user.nick == @bot.nick
+    netname = @bot.irc.network.name.to_s.downcase
+    network = Format(:bold, "[#{colorise(netname)}]")
+    send_relay("#{network} *** Relay parted/disconnected. Attempting to reconnect/rejoin...")
+  end
   
   def ignored_nick?(nick)
     if $config["ignore"]["nicks"].include? nick.downcase

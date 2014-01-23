@@ -23,6 +23,7 @@ $config = YAML.load_file("config/config.yaml")
 $bots = Hash.new
 $zncs = Hash.new
 $threads = Array.new
+$start = Time.now.to_i
 
 # Set up a bot for each server
 $config["servers"].each do |name, server|

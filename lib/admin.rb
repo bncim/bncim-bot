@@ -224,7 +224,7 @@ class AdminPlugin
     $config["notifymail"].each do |email|
       Mail.send_rejected_admin(email, r.id, m.user.mask.to_s)
     end
-    RequestDB.delete(r.id)
+    RequestDB.delete_id(r.id)
   end
   
   def msg_to_control(msg)

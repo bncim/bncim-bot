@@ -217,7 +217,7 @@ class RequestPlugin
 
     Mail.send_verify(r.email, r.id, r.key)
                                
-    m.reply "Your request has been submitted. Please check your " + \
+    m.reply "Your request (##{r.id}) has been submitted. Please check your " + \
             "email for information on how to proceed."
 
     adminmsg("Request ##{r.id} created and pending email verification.")
@@ -244,7 +244,7 @@ class RequestPlugin
     RequestDB.confirm(r.id)
     r = RequestDB.requests[r.id]
 
-    m.reply "Request confirmed! Your request is now pending administrative approval. " + \
+    m.reply "Request ##{r.id} confirmed! Your request is now pending administrative approval. " + \
       "You will receive an email with further details when it is approved. Thanks for using bnc.im."
 
     $config["notifymail"].each do |email|

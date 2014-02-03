@@ -49,6 +49,36 @@ class Mail
 
     self.send(to_addr, msg)
   end
+  
+  def self.send_reject(to_addr, id, reason)
+    
+    msgstr = <<-END_OF_MESSAGE
+      From: bnc.im bot <no-reply@bnc.im>
+      To: #{to_addr}
+      Reply-to: admin@bnc.im
+      Subject: bnc.im account rejected
+      Date: #{Time.now.ctime}
+      Message-Id: <#{UUID.generate}@bnc.im>
+      
+      I am sorry to inform you that your bnc.im account has been rejected. The reason given by our administrator was:
+      
+      #{reason}
+      
+      If you wish to appeal this decision, please join us in irc.interlinked.me #bnc.im or join our webchat at
+      https://bnc.im/webchat. Alternatively, email us at admin@bnc.im.
+      
+      Regards,
+      bnc.im team
+      admin@bnc.im
+			http://bnc.im/
+    END_OF_MESSAGE
+    
+    # remove whitespace from above
+    msg = msgstr.lines.map { |l| l.strip }.join("\r\n")
+
+    self.send(to_addr, msg)
+  end
+  
 
   def self.request_waiting(to_addr, r)
     msgstr = <<-END_OF_MESSAGE
@@ -88,6 +118,26 @@ class Mail
       Message-Id: <#{UUID.generate}@bnc.im>
 
       The bnc.im request ##{id} has been approved by #{admin}.
+      
+      Regards,
+      bnc.im bot
+    END_OF_MESSAGE
+
+    msg = msgstr.lines.map { |l| l.strip }.join("\r\n")
+
+    self.send(to_addr, msg)
+  end
+  
+  def self.send_rejected_admin(to_addr, id, admin)
+    msgstr = <<-END_OF_MESSAGE
+      From: bnc.im bot <no-reply@bnc.im>
+      To: #{to_addr}
+      Reply-to: admin@bnc.im
+      Subject: RE: bnc.im account request - ##{r.id} for #{r.username}
+      Date: #{Time.now.ctime}
+      Message-Id: <#{UUID.generate}@bnc.im>
+
+      The bnc.im request ##{id} has been rejected by #{admin}.
       
       Regards,
       bnc.im bot

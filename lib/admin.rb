@@ -191,6 +191,41 @@ class AdminPlugin
     end
   end
   
+  def reject(m, id, reason)
+    return unless m.channel == "#bnc.im-admin"
+    unless RequestDB.requests.has_key?(id.to_i)
+      m.reply "Error: request ##{id} not found."
+      return
+    end
+    
+    r = RequestDB.requests[id.to_i]
+    
+    unless r.confirmed?
+      m.reply "Error: request ##{id} has not been confirmed by email."
+      return
+    end
+    
+    if r.approved?
+      m.reply "Error: request ##{id} is already approved."
+      return
+    end
+    
+    $bots.each do |network, bot|
+      begin
+        bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
+                     " :Request ##{id} (for #{r.source} has been rejected by #{m.user.nick}. Reason: #{reason}.")
+      rescue => e
+        # pass
+      end
+    end
+    adminmsg("Request ##{id} (for #{r.source} has been rejected by #{m.user.nick}. Reason: #{reason}.")
+    Mail.send_reject(r.email, id, reason)
+    $config["notifymail"].each do |email|
+      Mail.send_rejected_admin(email, r.id, m.user.mask.to_s)
+    end
+    RequestDB.delete(r.id)
+  end
+  
   def msg_to_control(msg)
     "PRIVMSG *controlpanel :#{msg}"
   end

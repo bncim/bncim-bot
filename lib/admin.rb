@@ -329,7 +329,7 @@ class AdminPlugin
     m.reply "#{pending.size} pending report(s):"
     
     pending.each do |report|
-      m.reply format_report(request)
+      m.reply format_report(report)
     end
   end
   

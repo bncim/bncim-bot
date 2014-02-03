@@ -88,8 +88,8 @@ class ReportPlugin
     end
     
     r = ReportDB.create(Time.now.to_i, username, server, m.user.mask.to_s, content, @bot.irc.network.name.to_s.downcase)
-    m.reply "#{Format(:bold, "Report ##{r.id} has been created")}. Please wait for a response from an administrator. They may contact you via" + \
-            "email or IRC to help deal with your request. Your request will be dealt with even if you leave IRC. You can cancel this report using" + \
+    m.reply "#{Format(:bold, "Report ##{r.id} has been created")}. Please wait for a response from an administrator. They may contact you via " + \
+            "email or IRC to help deal with your request. Your request will be dealt with even if you leave IRC. You can cancel this report using " + \
             "!cancelreport #{r.id}."
     adminmsg("#{Format(:red, "[NEW REPORT]")} #{format_report(r)}")
   end

@@ -181,6 +181,14 @@ class AdminPlugin
       Mail.send_approved_admin(email, r.id, m.user.mask.to_s)
     end
     adminmsg("Request ##{id} approved to #{server} (#{ip}) by #{m.user}.")
+    $bots.each do |network, bot|
+      begin
+        bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
+                     " :Request ##{id} (for user #{r.source.split("!")[0]} has been approved by #{m.user.nick}.")
+      rescue => e
+        # pass
+      end
+    end
   end
   
   def msg_to_control(msg)

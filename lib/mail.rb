@@ -32,11 +32,11 @@ class Mail
       Date: #{Time.now.ctime}
       Message-Id: <#{UUID.generate}@bnc.im>
 
-      Someone, hopefully you, requested an account in the http://bnc.im IRC channel. Once you have read and agreed to our Terms of Service (located at https://bnc.im/terms-of-service.html), please send
+      Someone, hopefully you, requested an account in the http://bnc.im IRC channel. Once you have read and agreed to our Terms of Service (located at https://bnc.im/terms-of-service), please send
 
       !verify #{id} #{code} 
 
-      in either #bnc.im or in a private message to the bot. If you need any help, please visit http://bnc.im/webchat.html.
+      in either #bnc.im or in a private message to the bncim bot. If you need any help, please visit http://bnc.im/webchat.
 
       Regards,
       bnc.im team
@@ -83,7 +83,7 @@ class Mail
       From: bnc.im bot <no-reply@bnc.im>
       To: #{to_addr}
       Reply-to: admin@bnc.im
-      Subject: bnc.im account request approved - ##{id}
+      Subject: RE: bnc.im account request - ##{r.id} for #{r.username}
       Date: #{Time.now.ctime}
       Message-Id: <#{UUID.generate}@bnc.im>
 
@@ -134,8 +134,11 @@ class Mail
 
       If you need any help, please do not hestitate to join our IRC 
       channel: irc.interlinked.me #bnc.im - or connect to our webchat
-      at https://bnc.im/webchat.html. We also have some setup information
-      at http://bnc.im/setup.html.
+      at https://bnc.im/webchat. Please make sure you have read and
+      reviewed our Terms of Service at http://bnc.im/terms-of-service.
+      
+      If you need help using ZNC, plenty of documentation can be found
+      on the ZNC wiki at http://wiki.znc.in/. 
       
       Regards,
       bnc.im team

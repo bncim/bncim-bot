@@ -184,7 +184,7 @@ class AdminPlugin
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
-                     " :Request ##{id} (for user #{r.source.split("!")[0]} has been approved by #{m.user.nick}.")
+                     " :Request ##{id} (for #{r.source} has been approved by #{m.user.nick}.")
       rescue => e
         # pass
       end

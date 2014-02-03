@@ -85,7 +85,7 @@ class Mail
       From: bnc.im bot <no-reply@bnc.im>
       To: #{to_addr}
       Reply-to: admin@bnc.im
-      Subject: bnc.im account request - ##{r.id} for #{r.username}
+      Subject: bnc.im account request - ##{r.id}
       Date: #{Time.now.ctime}
       Message-Id: <#{UUID.generate}@bnc.im>
 
@@ -113,7 +113,7 @@ class Mail
       From: bnc.im bot <no-reply@bnc.im>
       To: #{to_addr}
       Reply-to: admin@bnc.im
-      Subject: RE: bnc.im account request - ##{r.id} for #{r.username}
+      Subject: RE: bnc.im account request - ##{id}
       Date: #{Time.now.ctime}
       Message-Id: <#{UUID.generate}@bnc.im>
 
@@ -133,7 +133,7 @@ class Mail
       From: bnc.im bot <no-reply@bnc.im>
       To: #{to_addr}
       Reply-to: admin@bnc.im
-      Subject: RE: bnc.im account request - ##{r.id} for #{r.username}
+      Subject: RE: bnc.im account request - ##{id}
       Date: #{Time.now.ctime}
       Message-Id: <#{UUID.generate}@bnc.im>
 

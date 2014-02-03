@@ -54,7 +54,7 @@ end
 class Report
   attr_reader :id, :username, :server
   attr_accessor :ts, :source, :content
-  attr_accessor :cleared
+  attr_accessor :cleared, :ircnet
 
   def initialize(id, ts, username, server, source, content, ircnet, cleared = false)
     @id = id

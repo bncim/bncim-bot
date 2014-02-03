@@ -340,12 +340,12 @@ class AdminPlugin
   
   def format_report(r)
     if r.cleared?
-      clearedstr = Format(:bold, "[CLEARED]")
+      clearedstr = Format(:bold, "[CLEARED] ")
     else
       clearedstr = ""
     end
     
-    "%s %s Source: %s on %s / Username: %s / Date: %s / Server: %s / Content: %s" %
+    "%s %sSource: %s on %s / Username: %s / Date: %s / Server: %s / Content: %s" %
       [Format(:bold, "[##{r.id}]"), clearedstr, Format(:bold, r.source.to_s), 
        Format(:bold, r.ircnet.to_s), Format(:bold, r.username.to_s),
        Format(:bold, Time.at(r.ts).ctime), Format(:bold, r.server),

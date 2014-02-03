@@ -14,6 +14,7 @@ require 'cinch'
 require 'cinch/plugins/identify'
 require 'yaml'
 require 'lib/requests'
+require 'lib/reports'
 require 'lib/admin'
 require 'lib/relay'
 require 'lib/logger'
@@ -84,6 +85,8 @@ end
 
 # Initialize the RequestDB
 RequestDB.load($config["requestdb"])
+ReportDB.load($config["reportdb"])
+
 
 # Start the bots
 

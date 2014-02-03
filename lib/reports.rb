@@ -12,7 +12,7 @@ class ReportDB
     end
     
     CSV.foreach(file) do |row|
-      report = Report.new(row[0], row[1].to_i, row[2], row[3], row[4], row[5], row[6], row[7])
+      report = Report.new(row[0].to_i, row[1].to_i, row[2], row[3], row[4], row[5], row[6], row[7])
       @@reports[report.id] = report
     end
   end

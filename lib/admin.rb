@@ -185,7 +185,7 @@ class AdminPlugin
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
-                     " :Request ##{id} (for #{r.source} has been approved by #{m.user.nick}.")
+                     " :Request ##{id} (for #{r.source}) has been approved by #{m.user.nick}.")
       rescue => e
         # pass
       end
@@ -214,12 +214,12 @@ class AdminPlugin
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
-                     " :Request ##{id} (for #{r.source} has been rejected by #{m.user.nick}. Reason: #{reason}.")
+                     " :Request ##{id} (for #{r.source}) has been rejected by #{m.user.nick}. Reason: #{reason}.")
       rescue => e
         # pass
       end
     end
-    adminmsg("Request ##{id} (for #{r.source} has been rejected by #{m.user.nick}. Reason: #{reason}.")
+    adminmsg("Request ##{id} (for #{r.source}) has been rejected by #{m.user.nick}. Reason: #{reason}.")
     Mail.send_reject(r.email, id, reason)
     $config["notifymail"].each do |email|
       Mail.send_rejected_admin(email, r.id, m.user.mask.to_s)

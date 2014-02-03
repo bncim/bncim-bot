@@ -74,7 +74,9 @@ end
 
 class ReportPlugin
   include Cinch::Plugin
-  match /report\s+(\w+)\s+(\w+)\s+(.+)$/i, method: :report
+  match /report\s+(\w+)\s+(\w+)\s+(.+)$/i, method: :report, group: :report
+  match /report/, method: :help, group: :report
+  
   match /cancelreport\s+(\d+)/i, method: :cancel
   
   match /reportid (\d+)/i, method: :reportid
@@ -133,6 +135,11 @@ class ReportPlugin
     m.reply(format_report(ReportDB.reports[id.to_i]))
   end
   
+  def help(m)
+    return if m.channel == "#bnc.im-admin"
+    m.reply "#{Format(:bold, "Syntax: !report <server> <username> <details of report/support request>")}. This command can be issued in a private message."
+  end
+  
   def clear(m, id)
     return unless m.channel == "#bnc.im-admin"
     unless ReportDB.reports.has_key?(id.to_i)
@@ -143,13 +150,11 @@ class ReportPlugin
     ReportDB.clear(id.to_i)
     m.reply("Report ##{id} cleared.")
     $bots.each do |network, bot|
-      unless bot.irc.network.name.to_s.downcase == @bot.irc.network.name.to_s.downcase
-        begin
-          bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
-                       " :Report ##{id} has been cleared by #{m.user.nick}.")
-        rescue => e
-          # pass
-        end
+      begin
+        bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
+                     " :Report ##{id} has been cleared by #{m.user.nick}.")
+      rescue => e
+        # pass
       end
     end
   end

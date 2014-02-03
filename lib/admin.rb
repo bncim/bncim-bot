@@ -11,6 +11,8 @@ class AdminPlugin
   match /requser\s+(\S+)/, method: :requser
   match "pending", method: :pending
   match "unconfirmed", method: :unconfirmed
+  match "reports", method: :reports
+  match "todo", method: :todo
   match /fverify\s+(\d+)/, method: :fverify
   match "servers", method: :servers
   match /broadcast (.+)/, method: :broadcast
@@ -309,6 +311,39 @@ class AdminPlugin
     pending.each do |request|
       m.reply format_status(request)
     end
+  end
+  
+  def reports(m)
+    return unless m.channel == "#bnc.im-admin"
+    
+    pending = Array.new
+    ReportDB.reports.each_value do |r|
+      pending << r unless r.cleared?
+    end
+    
+    if pending.empty?
+      m.reply "No pending reports."
+      return
+    end
+    
+    m.reply "#{pending.size} pending report(s):"
+    
+    pending.each do |report|
+      m.reply format_report(request)
+    end
+  end
+  
+  def todo(m)
+    reports(m)
+    pending(m)
+  end
+  
+  def format_report(r)
+    "%s Source: %s on %s / Username: %s / Date: %s / Server: %s / Content: %s" %
+      [Format(:bold, "[##{r.id}]"), Format(:bold, r.source.to_s), 
+       Format(:bold, r.ircnet.to_s), Format(:bold, r.username.to_s),
+       Format(:bold, Time.at(r.ts).ctime), Format(:bold, r.server),
+       Format(:bold, r.content.to_s)]
   end
   
   def unconfirmed(m)

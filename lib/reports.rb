@@ -87,7 +87,7 @@ class ReportPlugin
       return
     end
     
-    r = ReportDB.create(Time.now.to_i, username, server, m.user.mask.to_s, content, @bot.irc.network.to_s.downcase)
+    r = ReportDB.create(Time.now.to_i, username, server, m.user.mask.to_s, content, @bot.irc.network.name.to_s.downcase)
     m.reply "#{Format(:bold, "Report ##{r.id} has been created")}. Please wait for a response from an administrator. They may contact you via" + \
             "email or IRC to help deal with your request. Your request will be dealt with even if you leave IRC. You can cancel this report using" + \
             "!cancelreport #{r.id}."
@@ -105,7 +105,7 @@ class ReportPlugin
     if m.user.mask =~ origin
       m.reply "Clearing report ##{id}."
       ReportDB.clear(id.to_i)
-      adminmsg("Report ##{id} has been cleared by #{m.user.mask} on #{@bot.irc.network.to_s.downcase}.")
+      adminmsg("Report ##{id} has been cleared by #{m.user.mask} on #{@bot.irc.network.name.to_s.downcase}.")
     else
       m.reply "Error: you cannot clear this report."
     end

@@ -6,6 +6,7 @@ class AdminPlugin
   match /topic (.+)/, method: :topic
   match /approve\s+(\d+)\s+(\S+)\s*$/, method: :approve, group: :approve
   match /approve\s+(\d+)\s+(\S+)\s+(.+)\s*$/, method: :approve, group: :approve
+  match /reject\s+(\d+)\s+(.+)\s*$/, method: :reject
   match /delete\s+(\d+)/, method: :delete
   match /reqinfo\s+(\d+)/, method: :reqinfo
   match /requser\s+(\S+)/, method: :requser

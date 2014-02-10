@@ -23,6 +23,26 @@ class RelayPlugin
   listen_to :leaving, method: :relay_disconnect
   
   match "nicks", method: :nicks
+	match "channels", method: :channels
+
+	def networks(m)
+	  pre_join_strs = Array.new
+	  $bots.keys.each do |network|
+      pre_join_strs << "#{network}/#{$config["servers"][network]["channel"]}"
+	  end
+
+	  reply = "I am in #{$bots.size} networks/channels: #{pre_join_strs.join(", ")}."
+	  m.reply reply
+	  sleep 0.1
+	  relay_cmd_reply(reply)
+	end
+
+  def relay_cmd_reply(text)
+		netname = @bot.irc.network.name.to_s.downcase
+		network = Format(:bold, "[#{colorise(netname)}]")
+		relay_reply = "#{network} <#{@bot.nick}> #{text}"
+    send_relay(relay_reply)
+	end
 
   def relay_connect(m)
     elapsed_time = Time.now.to_i - $start

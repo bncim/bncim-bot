@@ -25,7 +25,7 @@ class RelayPlugin
   match "nicks", method: :nicks
 	match "channels", method: :channels
 
-	def networks(m)
+	def channels(m)
 	  pre_join_strs = Array.new
 	  $bots.keys.each do |network|
       pre_join_strs << "#{network}/#{$config["servers"][network]["channel"]}"

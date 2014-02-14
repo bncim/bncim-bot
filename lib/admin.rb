@@ -23,22 +23,54 @@ class AdminPlugin
   match /delnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnetwork
   match "stats", method: :stats
   match /find (\S+)/, method: :find
+  match /findnet (\S+)/, method: :findnet
   match "offline", method: :offline
   
   match "help", method: :help
   
   def offline(m)
     return unless m.channel == "#bnc.im-admin"
-    m.reply "Results:"
+    results = []
     $userdb.servers.each do |name, server|
       server.users.each do |username, user|
         user.networks.each do |network|
           unless network.online
-            m.reply "[Offline Network] Username: #{username} | Server: #{name} | Network: #{network.name}"
+            results << "[Offline Network] Username: #{username} | Server: #{name} | Network: #{network.name}"
           end
         end
       end
     end
+    if results.empty?
+      m.reply "No results."
+      return
+    end
+    m.reply "#{results.size} results:"
+    results.each { |r| m.reply r }
+    m.reply "End of results."
+  end
+  
+  def findnet(m, str)
+    return unless m.channel == "#bnc.im-admin"
+    results = []
+    $userdb.servers.each do |name, server|
+      server.users.each do |username, user|
+        user.networks.each do |network|
+          if network.name =~ /#{str}/i or network.server =~ /#{str}/i
+            if network.online
+              results << "[#{user.server}] [#{user.username} Network] Name: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
+            else
+              results << "[#{user.server}] [#{user.username} Network] Name: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
+            end
+          end
+        end
+      end
+    end
+    if results.empty?
+      m.reply "No results."
+      return
+    end
+    m.reply "#{results.size} results:"
+    results.each { |r| m.reply r }
     m.reply "End of results."
   end
   
@@ -51,12 +83,12 @@ class AdminPlugin
     end
     m.reply "Results:" 
     results.each do |user|
-      m.reply "[User] Username: #{user.username} | Server: #{user.server} | Networks: #{user.networks.size}"
+      m.reply "[#{user.server}] [User] Username: #{user.username} | Server: #{user.server} | Networks: #{user.networks.size}"
       user.networks.each do |network|
         if network.online
-          m.reply "[#{user.username} Network] Name: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
+          m.reply "[#{user.server}] [#{user.username} Network] Name: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
         else
-          m.reply "[#{user.username} Network] Name: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
+          m.reply "[#{user.server}] [#{user.username} Network] Name: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
         end
       end
     end

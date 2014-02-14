@@ -74,14 +74,7 @@ class RequestDB
   end
 
   def self.username_used?(user)
-    @@requests.each_value do |request|
-      if request.username.downcase == user.downcase
-        return true
-      else
-        next
-      end
-    end
-    return false
+    $userdb.username_available?(user)
   end
 
   def self.create(*args)

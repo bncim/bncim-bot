@@ -22,8 +22,29 @@ class AdminPlugin
   match /addnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s+(.+)\s*$/, method: :addnetwork
   match /delnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnetwork
   match "stats", method: :stats
+  match /find (\S+)/, method: :find
   
   match "help", method: :help
+  
+  def find(search_str)
+    return unless m.channel == "#bnc.im-admin"
+    results = $userdb.find_user(search_str)
+    if results.nil?
+      m.reply "no results"
+      return
+    end
+    m.reply "Results:" 
+    results.each do |user|
+      m.reply "[User] Username: #{user.username} | Server: #{user.server} | Networks: #{user.networks.size}"
+      user.networks.each do |network|
+        if network.online
+          m.reply "[#{user.username} Network] Name: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
+        else
+          m.reply "[#{user.username} Network] Name: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
+        end
+      end
+    end
+  end
   
   def stats(m)
     return unless m.channel == "#bnc.im-admin"

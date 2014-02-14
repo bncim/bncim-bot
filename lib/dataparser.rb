@@ -127,6 +127,22 @@ module ZNC
       end
     end
     
+    def find_user(search)
+      results = []
+      @servers.each do |name, server|
+        server.users.each do |name, user|
+          if user.username =~ /#{search}/i
+            results << user
+          end
+        end
+      end
+      if results.empty?
+        return nil
+      else
+        return results
+      end
+    end
+    
     def users_count
       users = 0
       @servers.each do |name, server|
@@ -148,7 +164,6 @@ module ZNC
     private
     
     def update_data
-      AdminMsg.do("Updating ZNC user data....")
       @servers.each do |name, server|
         sock = TCPSocket.new(server.addr, server.port)
         ssl_context = OpenSSL::SSL::SSLContext.new
@@ -185,8 +200,7 @@ module ZNC
         
         @servers[server.name].users = users
       end
-      AdminMsg.do("ZNC user data updated...")
-      sleep 120
+      sleep 60
       update_data
     end
   end

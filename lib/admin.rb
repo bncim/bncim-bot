@@ -26,7 +26,7 @@ class AdminPlugin
   
   match "help", method: :help
   
-  def find(search_str)
+  def find(m, search_str)
     return unless m.channel == "#bnc.im-admin"
     results = $userdb.find_user(search_str)
     if results.nil?

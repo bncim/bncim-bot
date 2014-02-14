@@ -91,7 +91,7 @@ ReportDB.load($config["reportdb"])
 # Initialize UserDB
 servers = []
 $config["zncservers"].each do |name, server|
-  servers << ZNC::Server.new(name, server["addr"], server["port"], server["username"], server["password"])
+  servers[name] = ZNC::Server.new(name, server["addr"], server["port"], server["username"], server["password"])
 end
 
 $userdb = ZNC::UserDB.new(servers)

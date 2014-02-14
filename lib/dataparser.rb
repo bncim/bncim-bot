@@ -110,7 +110,7 @@ module ZNC
     
     def initialize(servers)
       @servers = servers
-      update_data
+      Thread.new { update_data }
     end
     
     def username_available?(username)
@@ -186,7 +186,8 @@ module ZNC
         @servers[server.name].users = users
       end
       AdminMsg.do("ZNC user data updated...")
-      Thread.new { sleep 120; update_data }
+      sleep 120
+      update_data
     end
   end
 end

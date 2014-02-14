@@ -50,7 +50,7 @@ $config["servers"].each do |name, server|
         c.plugins.plugins << Cinch::Plugins::Identify
         c.plugins.options[Cinch::Plugins::Identify] = {
           :username => $config["bot"]["saslname"],
-          :password => $config["bot"]["saslpass"],
+          :password => server["qpass"],
           :type     => :challengeauth,
         }
       elsif server["sasl"] == false

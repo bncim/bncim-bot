@@ -40,12 +40,14 @@ $config["servers"].each do |name, server|
       c.channels = $config["bot"]["channels"].dup
       if $config["admin"]["network"] == name
         c.channels << $config["admin"]["channel"]
+        c.channels << "#bnc.im-log"
       end
       unless server["sasl"] == false
         c.sasl.username = $config["bot"]["saslname"]
         c.sasl.password = $config["bot"]["saslpass"]
         c.plugins.plugins = [RequestPlugin, RelayPlugin, ReportPlugin]
         c.plugins.plugins << AdminPlugin if $config["admin"]["network"] == name
+        c.plugins.plugins << LogPlugin if $config["admin"]["network"] == name
       else
         c.plugins.plugins = [RelayPlugin, RequestPlugin, Cinch::Plugins::Identify, ReportPlugin]
         c.plugins.options[Cinch::Plugins::Identify] = {
@@ -53,6 +55,7 @@ $config["servers"].each do |name, server|
           :type     => :nickserv,
         }
         c.plugins.plugins << AdminPlugin if $config["admin"]["network"] == name
+        c.plugins.plugins << LogPlugin if $config["admin"]["network"] == name
       end
     end
   end

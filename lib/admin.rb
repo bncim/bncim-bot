@@ -23,8 +23,24 @@ class AdminPlugin
   match /delnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnetwork
   match "stats", method: :stats
   match /find (\S+)/, method: :find
+  match "offline", method: :offline
   
   match "help", method: :help
+  
+  def offline(m)
+    return unless m.channel == "#bnc.im-admin"
+    m.reply "Results:"
+    $userdb.servers.each do |name, server|
+      server.users.each do |username, user|
+        user.networks.each do |network|
+          unless network.offline
+            m.reply "[Offline Network] Username: #{username} | Server: #{name} | Network: #{network.name}"
+          end
+        end
+      end
+    end
+    m.reply "End of results."
+  end
   
   def find(m, search_str)
     return unless m.channel == "#bnc.im-admin"

@@ -73,10 +73,6 @@ class RequestDB
     return false
   end
 
-  def self.username_used?(user)
-    $userdb.username_available?(user)
-  end
-
   def self.create(*args)
     obj = Request.new(self.next_id, *args)
     @@requests[obj.id] = obj
@@ -170,7 +166,9 @@ class RequestPlugin
       m.reply "Sorry, that email has already been used. Please contact an " + \
               "operator if you need help."
       return
-    elsif RequestDB.username_used?(username)
+    end
+    
+    unless $userdb.username_available?(username)
       m.reply "Error: that username has already been used. Please try another, or " + \
               "contact an operator for help."
       return

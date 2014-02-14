@@ -19,6 +19,7 @@ require 'lib/admin'
 require 'lib/relay'
 require 'lib/logger'
 require 'lib/mail'
+require 'lib/dataparser'
 
 $config = YAML.load_file("config/config.yaml")
 $bots = Hash.new
@@ -87,6 +88,13 @@ end
 RequestDB.load($config["requestdb"])
 ReportDB.load($config["reportdb"])
 
+# Initialize UserDB
+servers = []
+$config["zncservers"].each do |name, server|
+  servers << ZNC::Server.new(name, server["addr"], server["port"], server["username"], server["password"])
+end
+
+$userdb = ZNC::UserDB.new(servers)
 
 # Start the bots
 
@@ -97,5 +105,7 @@ end
 $bots.each do |key, bot|
   $threads << Thread.new { bot.start }
 end
+
+sleep 5
 
 $threads.each { |t| t.join } # wait for other threads

@@ -21,8 +21,19 @@ class AdminPlugin
   match /cp (\w+) (.+)/, method: :cp
   match /addnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s+(.+)\s*$/, method: :addnetwork
   match /delnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnetwork
+  match "stats", method: :stats
   
   match "help", method: :help
+  
+  def stats(m)
+    return unless m.channel == "#bnc.im-admin"
+    m.reply "[Stats] Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
+    servers = []
+    $userdb.servers.each do |name, server|
+      servers << "#{name}: #{server.users_count}/#{server.networks_count}"
+    end
+    m.reply "[Stats] #{servers.join(" | ")}"
+  end
   
   def addnetwork(m, server, username, netname, addrstr)
     return unless m.channel == "#bnc.im-admin"

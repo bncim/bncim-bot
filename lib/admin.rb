@@ -33,7 +33,7 @@ class AdminPlugin
     $userdb.servers.each do |name, server|
       server.users.each do |username, user|
         user.networks.each do |network|
-          unless network.offline
+          unless network.online
             m.reply "[Offline Network] Username: #{username} | Server: #{name} | Network: #{network.name}"
           end
         end

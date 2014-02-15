@@ -34,6 +34,7 @@ $config["servers"].each do |name, server|
       c.nick = $config["bot"]["nick"]
       c.user = $config["bot"]["user"]
       c.realname = $config["bot"]["realname"]
+      c.local_host = $config["bot"]["bindhost"]
       c.server = server["server"]
       c.ssl.use = server["ssl"]
       c.port = server["port"]
@@ -52,15 +53,15 @@ $config["servers"].each do |name, server|
           :password => server["qpass"],
           :type     => :challengeauth,
         }
-      elsif server["sasl"]
-        c.sasl.username = $config["bot"]["saslname"]
-        c.sasl.password = $config["bot"]["saslpass"]
-      else
+      elsif server["sasl"] == false
         c.plugins.plugins << Cinch::Plugins::Identify
         c.plugins.options[Cinch::Plugins::Identify] = {
           :password => $config["bot"]["saslpass"],
           :type     => :nickserv,
         }
+      else
+        c.sasl.username = $config["bot"]["saslname"]
+        c.sasl.password = $config["bot"]["saslpass"]
       end
     end
   end

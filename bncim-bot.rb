@@ -40,7 +40,7 @@ $config["servers"].each do |name, server|
       c.channels = $config["bot"]["channels"].dup
       c.plugins.plugins = [RequestPlugin, RelayPlugin, ReportPlugin]
       if $config["admin"]["network"] == name
-        c.channels = $config["bot"]["channels"].dup + $config["admin"]["channel"] + "#bnc.im-log"
+        c.channels = $config["bot"]["channels"].dup + [$config["admin"]["channel"], "#bnc.im-log"]
         c.messages_per_second = 20
         c.plugins.plugins << AdminPlugin
         c.plugins.plugins << LogPlugin

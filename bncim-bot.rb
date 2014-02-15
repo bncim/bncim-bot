@@ -52,7 +52,7 @@ $config["servers"].each do |name, server|
           :password => server["qpass"],
           :type     => :challengeauth,
         }
-      elsif server["sasl"] == false
+      elsif server["sasl"]
         c.sasl.username = $config["bot"]["saslname"]
         c.sasl.password = $config["bot"]["saslpass"]
       else

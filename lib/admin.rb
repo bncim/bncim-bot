@@ -25,8 +25,25 @@ class AdminPlugin
   match /find (\S+)/, method: :find
   match /findnet (\S+)/, method: :findnet
   match "offline", method: :offline
+  match /netcount (\S+)/, method: :netcount
   
   match "help", method: :help
+  
+  def netcount(m, str)
+    return unless m.channel == "#bnc.im-admin"
+    total, count = 0, 0
+    $userdb.servers.each do |name, server|
+      server.users.each do |username, user|
+        user.networks.each do |network|
+          if network.name =~ /#{str}/i or network.server =~ /#{str}/i
+            total += 1
+            online += 1 if network.online
+          end
+        end
+      end
+    end
+    m.reply "#{total} connections found for /#{str}/. #{offline} are offline."
+  end
   
   def offline(m)
     return unless m.channel == "#bnc.im-admin"

@@ -157,15 +157,19 @@ class RequestPlugin
   def detailed_help(m, args)
     split = args.split(" ")
     if split.size >= 4
-      unless split[0] =~ /\w+/
+      unless split[0] =~ /^\w+$/
         m.reply "#{Format(:bold, "Error:")} Please only use alphanumeric characters in your username."
       end
       unless split[1] =~ /@/
         m.reply "#{Format(:bold, "Error:")} The email you have provided is not valid."
       end
-      unless split[3] =~ /\+?\d+/
+      unless split[3] =~ /^\+?\d+$/
         m.reply "#{Format(:bold, "Error:")} Please only use numbers in the port. If you want to use SSL, append + before an SSL port, for example: +6697."
       end
+    elsif split.size == 3
+      m.reply "#{Format(:bold, "Error:")} Please add a port to your request. If you are unsure, use 6667."
+    else
+      help(m)
     end
   end
   
@@ -257,6 +261,10 @@ class RequestPlugin
       Mail.request_waiting(email, r)
     end
     adminmsg("#{Format(:red, "[NEW REQUEST]")} #{format_status(r)}")
+    
+    if r.port == "+6667" or r.port == "6697" 
+      adminmsg("#{Format(:bold, "Warning:")} Port selected by the user is #{r.port}.")
+    end
   end  
   
   def help(m)

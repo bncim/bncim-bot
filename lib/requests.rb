@@ -145,6 +145,7 @@ class RequestPlugin
   include Cinch::Plugin
   match /request\s+(\w+)\s+(\S+)\s+(\S+)\s+(\+?\d+)$/i, method: :request, group: :request
   match /request\s+(\w+)\s+(\S+)\s+(\S+)\s+(\+?\d+)\s+(\w+)$/i, method: :request, group: :request
+  match /request\s+(.+)$/i, method: :detailed_help, group: :request
   match /request/i, method: :help, group: :request
   match /networks/i, method: :servers
   match /web/i, method: :web
@@ -152,6 +153,21 @@ class RequestPlugin
   match /servers/i, method: :servers
   
   match "help", method: :help
+  
+  def detailed_help(m, args)
+    split = args.split(" ")
+    if split.size >= 4
+      unless split[0] =~ /\w+/
+        m.reply "#{Format(:bold, "Error:")} Please only use alphanumeric characters in your username."
+      end
+      unless split[1] =~ /@/
+        m.reply "#{Format(:bold, "Error:")} The email you have provided is not valid."
+      end
+      unless split[3] =~ /\+?\d+/
+        m.reply "#{Format(:bold, "Error:")} Please only use numbers in the port. If you want to use SSL, append + before an SSL port, for example: +6697."
+      end
+    end
+  end
   
   def servers(m)
     return if m.channel == "#bnc.im-admin"
@@ -186,7 +202,7 @@ class RequestPlugin
         if reason.nil?
           m.reply "Error: the server #{server} appears to be on our " + \
                   "network blacklist. Please see http://bnc.im/blacklist" + \
-                  ".html or contact an operator for more details."
+                  " or contact an operator for more details."
           return
         else
           m.reply "Error: #{reason}"

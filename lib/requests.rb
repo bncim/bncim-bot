@@ -143,14 +143,13 @@ end
 
 class RequestPlugin
   include Cinch::Plugin
-  match /request\s+(\w+)\s+(\S+)\s+(\S+)\s+(\+?\d+)$/, method: :request, group: :request
-  match /request\s+(\w+)\s+(\S+)\s+(\S+)\s+(\+?\d+)\s+(\w+)$/, method: :request, group: :request
-  match /request/, method: :help, group: :request
-  match "networks", method: :servers
-  match "web", method: :web
-  match "setup", method: :setup
-  match /verify\s+(\d+)\s+(\S+)/, method: :verify
-  match "servers", method: :servers
+  match /request\s+(\w+)\s+(\S+)\s+(\S+)\s+(\+?\d+)$/i, method: :request, group: :request
+  match /request\s+(\w+)\s+(\S+)\s+(\S+)\s+(\+?\d+)\s+(\w+)$/i, method: :request, group: :request
+  match /request/i, method: :help, group: :request
+  match /networks/i, method: :servers
+  match /web/i, method: :web
+  match /verify\s+(\d+)\s+(\S+)/i, method: :verify
+  match /servers/i, method: :servers
   
   match "help", method: :help
   
@@ -246,17 +245,12 @@ class RequestPlugin
   
   def help(m)
     return if m.channel == "#bnc.im-admin"
-    m.reply "#{Format(:bold, "Syntax: !request <user> <email> <server> [+]<port> [bnc.im server]")}. Parameters in brackets are not required. A + before the port denotes SSL. This command can be issued in a private message. Please use a valid email, it is verified."
-    m.reply Format(:bold, "Example: !request bncim-lover ilovebncs@mail.com irc.interlinked.me 6667")
-		m.reply Format(:bold, Format(:red, "DO NOT USE THIS COMMAND TO REQUEST ADDITIONAL NETWORKS. PLEASE USE !REPORT INSTEAD."))
+    m.reply "#{Format(:bold, "Syntax: !request <user> <email> <server> <port>")}. A + before the port denotes SSL. This command can be issued in a private message. Please use a valid email, it is verified. If you already have an account and wish to add a new network, use !report."
+    m.reply Format(:bold, "Example: !request george george@mail.com irc.freenode.net +6697")
   end
 
   def web(m)
     m.reply "http://bnc.im"
-  end
-
-  def setup(m)
-    m.reply "http://bnc.im/setup.html"
   end
 
   def adminmsg(text)

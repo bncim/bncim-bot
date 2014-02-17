@@ -266,17 +266,17 @@ class RequestPlugin
       adminmsg("#{Format(:bold, "Warning:")} Port selected by the user is #{r.port}.")
     end
     
-    adminmsg "Attempting to crawl #{server}:#{port} (timeout 15 sec)"
+    adminmsg "Attempting to crawl #{r.server}:#{r.port} (timeout 15 sec)"
     
     begin
-      results = Crawler.crawl(server, port)
+      results = Crawler.crawl(r.server, r.port)
     rescue => e
       adminmsg "Crawling failed! Error: #{e.message}"
       return
     end
     
     results.each do |line|
-      adminmsg "#{Format(:bold, "[#{server}]")} #{line}"
+      adminmsg "#{Format(:bold, "[#{r.server}]")} #{line}"
     end
   end  
   

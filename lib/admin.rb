@@ -1,5 +1,6 @@
 require 'socket'
 require 'openssl'
+require 'timeout'
 
 class Crawler
   def self.crawl(server, port)
@@ -28,21 +29,25 @@ class Crawler
     sock.puts "USER crawler crawler crawler :bnc.im crawler"
     sock.puts "NICK #{nick}"
     
-    while line = sock.gets
-      elapsed = Time.now.to_i - start
-      break if elapsed > 15
-      if line =~ /^PING (\S+)/
-        sock.puts "PONG #{$1}"
-      elsif line =~ /^:(\S+) (001|002|251|266|376) #{nick} :?(.+)$/
-        if $2 == "376"
-          sock.puts "QUIT :Bye!"
-          sock.close
-          break
-        else
-          results << $3
+    Timeout::timeout(20) do 
+      while line = sock.gets
+        elapsed = Time.now.to_i - start
+        break if elapsed > 15
+        if line =~ /^PING (\S+)/
+          sock.puts "PONG #{$1}"
+        elsif line =~ /^:(\S+) (001|002|251|266|376) #{nick} :?(.+)$/
+          if $2 == "376"
+            sock.puts "QUIT :Bye!"
+            sock.close
+            break
+          else
+            results << $3
+          end
         end
       end
     end
+    
+    results << "No data gathered. Did the request time out?" if results.empty?
     
     results
   end
@@ -80,9 +85,19 @@ class AdminPlugin
   
   match "help", method: :help
   
+  def help(m)
+    if m.channel == "#bnc.im-admin"
+      m.reply "Admin commands:"
+      m.reply "!unconfirmed | !pending | !reqinfo <id> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask>"
+      m.reply "!addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname> | !approve <id> <ip> [irc server] [irc port] | !todo | !reports | !clear <reportid> [message] | !offline"
+      m.reply "!find <user regexp> | !findnet <regexp> | !crawl <server> <port> | !netcount <regexp> | !stats"
+    end
+  end
+  
+  
   def crawl(m, server, port)
     return unless m.channel == "#bnc.im-admin"
-    m.reply "Attempting to crawl #{server}:#{port} (timeout 15 sec)"
+    m.reply "Attempting to crawl #{server}:#{port} (timeout 20 sec)"
     
     begin
       results = Crawler.crawl(server, port)
@@ -395,15 +410,7 @@ class AdminPlugin
   def msg_to_control(msg)
     "PRIVMSG *controlpanel :#{msg}"
   end
-  
-  def help(m)
-    if m.channel == "#bnc.im-admin"
-      m.reply "Admin commands:"
-      m.reply "!unconfirmed | !pending | !reqinfo <id> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask>"
-      m.reply "!addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname>"
-    end
-  end
-  
+    
   def find_server_by_ip(ip)
     ips = $config["ips"]
     ips.each do |server, addrs|

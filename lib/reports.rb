@@ -84,6 +84,9 @@ class ReportPlugin
   
   def report(m, server, username, content)
     server.downcase!
+    if server =~ /^(\w{3}\d)\.bnc\.im$/
+      server = $1
+    end
     unless $zncs.has_key? server
       m.reply "Server \"#{server}\" not found. Possible options: #{$zncs.keys.join(", ")}."
       return
@@ -146,7 +149,7 @@ class ReportPlugin
     m.reply "#{Format(:bold, "Syntax: !report <server> <username> <details of report/support request>")}. This command can be issued in a private message."
   end
   
-  def clear(m, id)
+  def clear(m, id, response = "No response given.")
     return unless m.channel == "#bnc.im-admin"
     unless ReportDB.reports.has_key?(id.to_i)
       m.reply "Error: report ##{id} not found."
@@ -158,7 +161,7 @@ class ReportPlugin
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
-                     " :Report ##{id} has been cleared by #{m.user.nick}.")
+                     " :Report ##{id} has been cleared by #{m.user.nick} (#{response})")
       rescue => e
         # pass
       end

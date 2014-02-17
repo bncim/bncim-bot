@@ -266,7 +266,7 @@ class RequestPlugin
       adminmsg("#{Format(:bold, "Warning:")} Port selected by the user is #{r.port}.")
     end
     
-    adminmsg "Attempting to crawl #{r.server}:#{r.port} (timeout 15 sec)"
+    adminmsg "Attempting to crawl #{r.server}:#{r.port} (timeout 20 sec)"
     
     begin
       results = Crawler.crawl(r.server, r.port)

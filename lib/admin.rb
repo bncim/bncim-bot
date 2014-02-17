@@ -281,8 +281,26 @@ class AdminPlugin
       m.reply "Server \"#{server}\" not found."
       return
     end
-    $zncs[server].irc.send("PRIVMSG *controlpanel :#{command}")
-    m.reply "done!"
+    sock = TCPSocket.new($config["zncservers"][server]["addr"], $config["zncservers"][server]["port"].to_i)
+    ssl_context = OpenSSL::SSL::SSLContext.new
+    ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    sock = OpenSSL::SSL::SSLSocket.new(sock, ssl_context)
+    sock.sync = true
+    sock.connect
+    sock.puts "NICK bncbot"
+    sock.puts "USER bncbot bncbot bncbot :bncbot"
+    sock.puts "PASS #{$config["zncservers"][server]["username"]}:#{$config["zncservers"][server]["password"]}"
+    sock.puts "PRIVMSG *controlpanel :#{command}"
+    
+    Thread.new do
+      Timeout::timeout(10) do
+        while line = sock.gets
+          if line =~ /^:\*controlpanel!znc@bnc\.im PRIVMSG bncbot :(.+)$/
+            m.reply "#{Format(:bold, "[#{server}]")} #{$1}"
+          end
+        end
+      end
+    end
   end
 
   def ban(m, target)

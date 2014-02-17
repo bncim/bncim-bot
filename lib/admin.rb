@@ -1,3 +1,54 @@
+require 'socket'
+require 'openssl'
+
+class Crawler
+  def self.crawl(server, port)
+    ssl = false
+    if port[0] == "+"
+      port = port[1..-1].to_i
+      ssl = true
+    else
+      port = port.to_i
+    end
+    
+    results = []
+    
+    sock = TCPSocket.new(server, port)
+    if ssl
+      ssl_context = OpenSSL::SSL::SSLContext.new
+      ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      sock = OpenSSL::SSL::SSLSocket.new(sock, ssl_context)
+      sock.sync = true
+      sock.connect
+    end
+    start = Time.now.to_i
+    
+    nick = "bncim#{rand(1000)}"
+    
+    sock.puts "USER crawler crawler crawler :bnc.im crawler"
+    sock.puts "NICK #{nick}"
+    
+    while line = sock.gets
+      elapsed = Time.now.to_i - start
+      break if elapsed > 15
+      puts line
+      if line =~ /^PING (\S+)/
+        sock.puts "PONG #{$1}"
+      elsif line =~ /^:(\S+) (001|002|251|266|376) #{nick} :?(.+)$/
+        if $2 == "376"
+          sock.puts "QUIT :Bye!"
+          sock.close
+          break
+        else
+          results << $3
+        end
+      end
+    end
+    
+    results
+  end
+end
+
 class AdminPlugin
   include Cinch::Plugin
   match /ban (\S+)/, method: :ban
@@ -26,8 +77,25 @@ class AdminPlugin
   match /findnet (\S+)/, method: :findnet
   match "offline", method: :offline
   match /netcount (\S+)/, method: :netcount
+  match /crawl (\S+) (\+?\d+)/, method: :crawl
   
   match "help", method: :help
+  
+  def crawl(m, server, port)
+    return unless m.channel == "#bnc.im-admin"
+    m.reply "Attempting to crawl #{server}:#{port} (timeout 15 sec)"
+    
+    begin
+      results = Crawler.crawl(server, port)
+    rescue => e
+      m.reply "Crawling failed! Error: #{e.message}"
+      return
+    end
+    
+    results.each do |line|
+      m.reply "#{Format(:bold, "[#{server}]")} #{line}"
+    end
+  end
   
   def netcount(m, str)
     return unless m.channel == "#bnc.im-admin"

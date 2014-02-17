@@ -331,7 +331,7 @@ class AdminPlugin
     
     password = RequestDB.gen_key(15)
     netname = Domainatrix.parse(r.server).domain
-    netname = Domainatrix.parse(addr.split(" ")[0]) unless addr.nil?
+    netname = Domainatrix.parse(addr.split(" ")[0]).domain unless addr.nil?
         
     $zncs[server].irc.send(msg_to_control("CloneUser templateuser #{r.username}"))
     $zncs[server].irc.send(msg_to_control("Set Nick #{r.username} #{r.username}"))

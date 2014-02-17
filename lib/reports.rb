@@ -74,13 +74,14 @@ end
 
 class ReportPlugin
   include Cinch::Plugin
-  match /report\s+(\w+)\s+(\w+)\s+(.+)$/i, method: :report, group: :report
+  match /report\s+(\S+)\s+(\w+)\s+(.+)$/i, method: :report, group: :report
   match /report/, method: :help, group: :report
   
   match /cancelreport\s+(\d+)/i, method: :cancel
   
   match /reportid (\d+)/i, method: :reportid
-  match /clear (\d+)/i, method: :clear
+  match /clear (\d+)$/i, method: :clear, group: :clear
+  match /clear (\d+) (.+)$/i, method: :clear, group: :clear
   
   def report(m, server, username, content)
     server.downcase!

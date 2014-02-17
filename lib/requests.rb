@@ -265,6 +265,19 @@ class RequestPlugin
     if r.port == "+6667" or r.port == "6697" 
       adminmsg("#{Format(:bold, "Warning:")} Port selected by the user is #{r.port}.")
     end
+    
+    adminmsg "Attempting to crawl #{server}:#{port} (timeout 15 sec)"
+    
+    begin
+      results = Crawler.crawl(server, port)
+    rescue => e
+      adminmsg "Crawling failed! Error: #{e.message}"
+      return
+    end
+    
+    results.each do |line|
+      adminmsg "#{Format(:bold, "[#{server}]")} #{line}"
+    end
   end  
   
   def help(m)

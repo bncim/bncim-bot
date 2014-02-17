@@ -31,7 +31,6 @@ class Crawler
     while line = sock.gets
       elapsed = Time.now.to_i - start
       break if elapsed > 15
-      puts line
       if line =~ /^PING (\S+)/
         sock.puts "PONG #{$1}"
       elsif line =~ /^:(\S+) (001|002|251|266|376) #{nick} :?(.+)$/

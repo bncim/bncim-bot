@@ -136,7 +136,7 @@ class AdminPlugin
       server.users.each do |username, user|
         user.networks.each do |network|
           unless network.online
-            results << "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
+            results << "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
           end
         end
       end
@@ -164,9 +164,9 @@ class AdminPlugin
         user.networks.each do |network|
           if network.name =~ /#{str}/i or network.server =~ /#{str}/i
             if network.online
-              results << "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Network: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
+              results << "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
             else
-              results << "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
+              results << "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
             end
           end
         end
@@ -203,9 +203,9 @@ class AdminPlugin
       m.reply "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Networks: #{user.networks.size}"
       user.networks.each do |network|
         if network.online
-          m.reply "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Network: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
+          m.reply "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
         else
-          m.reply "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
+          m.reply "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
         end
       end
     end

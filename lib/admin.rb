@@ -104,7 +104,7 @@ class AdminPlugin
     begin
       results = Crawler.crawl(server, port)
     rescue => e
-      m.reply "Crawling failed! Error: #{e.message}"
+      m.reply "#{Format(:bold, "Crawling failed!")} Error: #{e.message}"
       return
     end
     
@@ -136,7 +136,7 @@ class AdminPlugin
       server.users.each do |username, user|
         user.networks.each do |network|
           unless network.online
-            results << "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
+            results << [user, network]
           end
         end
       end
@@ -145,9 +145,10 @@ class AdminPlugin
       m.reply "No results."
       return
     end
-    m.reply "#{results.size} results:"
-    results.each { |r| m.reply r }
-    m.reply "End of results."
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                          Channels")
+    results.each do |user, network|
+      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(50) + "0"
+    end
   end
   
   def findnet(m, str, specserver = nil)
@@ -163,10 +164,7 @@ class AdminPlugin
       server.users.each do |username, user|
         user.networks.each do |network|
           if network.name =~ /#{str}/i or network.server =~ /#{str}/i
-            if network.online
-              results << "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{Format(:green, network.name)} -- user is #{Format(:green, "connected")} to #{network.server} as #{network.user} from #{network.bindhost} and is in #{network.channels} channels."
-              results << "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{Format(:red, network.name)} -- user is #{Format(:red, "disconnected from IRC")} with bindhost #{network.bindhost}."
-            end
+            results << [user, network]
           end
         end
       end
@@ -180,9 +178,14 @@ class AdminPlugin
       return
     end
     
-    m.reply "#{results.size} results:"
-    results.each { |r| m.reply r }
-    m.reply "End of results."
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                          Channels")
+    results.each do |user, network|
+      if network.online
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(50) + network.channels.to_s
+      else
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(50) + "0"
+      end
+    end
   end
   
   def find(m, search_str, specserver = nil)
@@ -197,14 +200,13 @@ class AdminPlugin
       return
     end
     
-    m.reply "#{results.size} results:"
     results.each do |user|
       m.reply Format(:bold, " Server  Username        Network           Userhost                                          Channels")
       user.networks.each do |network|
         if network.online
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + network.name.ljust(18) + network.user.ljust(50) + network.channels.to_s
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(50) + network.channels.to_s
         else
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + network.name.ljust(18) + "Network Offline".ljust(50) + "0"
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(50) + "0"
         end
       end
     end

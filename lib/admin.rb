@@ -77,9 +77,9 @@ class AdminPlugin
   match /addnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s+(.+)\s*$/, method: :addnetwork
   match /delnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnetwork
   match "stats", method: :stats
-  match /find (\S+)/, method: :find, group: :find
+  match /find (\S+)$/, method: :find, group: :find
   match /find (\S+) ([a-z]{3}\d)/, method: :find, group: :find
-  match /findnet (\S+)/, method: :findnet, group: :findnet
+  match /findnet (\S+)$/, method: :findnet, group: :findnet
   match /findnet (\S+) ([a-z]{3}\d)/, method: :findnet, group: :findnet
   match "offline", method: :offline
   match /netcount (\S+)/, method: :netcount
@@ -203,9 +203,9 @@ class AdminPlugin
       m.reply "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Networks: #{user.networks.size}"
       user.networks.each do |network|
         if network.online
-          m.reply "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
+          m.reply "   #{Format(:bold, "...")} Network: #{Format(:green, network.name)} | On: #{network.server} | Channels: #{network.channels}"
         else
-          m.reply "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
+          m.reply "   #{Format(:bold, "...")} Network: #{Format(:red, network.name)} | On: N/A | Channels: N/A"
         end
       end
     end

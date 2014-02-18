@@ -199,12 +199,12 @@ class AdminPlugin
     
     m.reply "#{results.size} results:"
     results.each do |user|
-      m.reply "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Networks: #{user.networks.size}"
+      m.reply Format(:bold, " Server  Username        Network           Userhost                                          Channels")
       user.networks.each do |network|
         if network.online
-          m.reply "   #{Format(:bold, "...")} Network: #{Format(:green, network.name)} -- user is #{Format(:green, "connected")} to #{network.server} as #{network.user} from #{network.bindhost} and is in #{network.channels} channels."
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + network.name.ljust(18) + network.user.ljust(50) + network.channels.to_s
         else
-          m.reply "   #{Format(:bold, "...")} Network: #{Format(:red, network.name)} -- user is #{Format(:red, "disconnected from IRC")} with bindhost #{network.bindhost}."
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + network.name.ljust(18) + "Network Offline".ljust(50) + "0"
         end
       end
     end

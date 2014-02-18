@@ -77,8 +77,10 @@ class AdminPlugin
   match /addnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s+(.+)\s*$/, method: :addnetwork
   match /delnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnetwork
   match "stats", method: :stats
-  match /find (\S+)/, method: :find
-  match /findnet (\S+)/, method: :findnet
+  match /find (\S+)/, method: :find, group: :find
+  match /find (\S+) ([a-z]{3}\d)/, method: :find, group: :find
+  match /findnet (\S+)/, method: :findnet, group: :findnet
+  match /findnet (\S+) ([a-z]{3}\d)/, method: :findnet, group: :findnet
   match "offline", method: :offline
   match /netcount (\S+)/, method: :netcount
   match /crawl (\S+) (\+?\d+)/, method: :crawl
@@ -134,7 +136,7 @@ class AdminPlugin
       server.users.each do |username, user|
         user.networks.each do |network|
           unless network.online
-            results << "[Offline Network] Username: #{username} | Server: #{name} | Network: #{network.name}"
+            results << "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
           end
         end
       end
@@ -148,46 +150,62 @@ class AdminPlugin
     m.reply "End of results."
   end
   
-  def findnet(m, str)
+  def findnet(m, str, specserver = nil)
     return unless m.channel == "#bnc.im-admin"
     results = []
     $userdb.servers.each do |name, server|
+      unless specserver.nil?
+        unless name.downcase == specserver.downcase
+          next
+        end
+      end
+      
       server.users.each do |username, user|
         user.networks.each do |network|
           if network.name =~ /#{str}/i or network.server =~ /#{str}/i
             if network.online
-              results << "[#{user.server}] [#{user.username} Network] Name: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
+              results << "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Network: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
             else
-              results << "[#{user.server}] [#{user.username} Network] Name: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
+              results << "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
             end
           end
         end
       end
     end
+    
     if results.empty?
       m.reply "No results."
       return
+    elsif results.size > 50
+      m.reply "#{Format(:bold, "Error:")} more than 50 results. Please be more specific."
+      return
     end
+    
     m.reply "#{results.size} results:"
     results.each { |r| m.reply r }
     m.reply "End of results."
   end
   
-  def find(m, search_str)
+  def find(m, search_str, specserver = nil)
     return unless m.channel == "#bnc.im-admin"
-    results = $userdb.find_user(search_str)
+    results = $userdb.find_user(search_str, specserver)
+    
     if results.nil?
-      m.reply "no results"
+      m.reply "No results."
+      return
+    elsif results.size > 50
+      m.reply "#{Format(:bold, "Error:")} more than 50 results. Please be more specific."
       return
     end
-    m.reply "Results:" 
+    
+    m.reply "#{results.size} results:"
     results.each do |user|
-      m.reply "[#{user.server}] [User] Username: #{user.username} | Server: #{user.server} | Networks: #{user.networks.size} | Last seen: #{user.last_seen_str}"
+      m.reply "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Networks: #{user.networks.size}"
       user.networks.each do |network|
         if network.online
-          m.reply "[#{user.server}] [#{user.username} Network] Name: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
+          m.reply "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Network: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"
         else
-          m.reply "[#{user.server}] [#{user.username} Network] Name: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
+          m.reply "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")}"
         end
       end
     end

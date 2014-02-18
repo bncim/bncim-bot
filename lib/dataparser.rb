@@ -157,12 +157,16 @@ module ZNC
       end
     end
     
-    def find_user(search)
+    def find_user(search, specserver = nil)
       results = []
       @servers.each do |name, server|
         server.users.each do |name, user|
           if user.username =~ /#{search}/i
-            results << user
+            if specserver.nil?
+              results << user
+            else
+              results << user if name.downcase == specserver.downcase
+            end
           end
         end
       end

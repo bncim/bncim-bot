@@ -88,11 +88,12 @@ module ZNC
 
   class UserNetwork
     attr_reader :name
-    attr_accessor :online, :server, :user, :channels
+    attr_accessor :online, :server, :user, :channels, :bindhost
   
     def initialize(name, user, online, server, channels)
       @name, @user, @online, @server = name, user, online, server
       @channels = channels
+      @bindhost = nil
     end
     
     def to_s
@@ -113,15 +114,23 @@ module ZNC
         elsif line =~ /^\| (\w+)\s+\| N\/A/ # new user
           u = User.new($1, server)
           while line = lines.shift
-            if line =~ /^\| \|\-\s+\| (\S+)\s+\| (\d+)\s+\| Yes\s+\| (\S+)\s+\| (\S+)\s+\| (\d+)\s+\|\s*$/
-              u.networks << UserNetwork.new($1, $4, true, $3, $5)
-            elsif line =~ /^\| \`\-\s+\| (\S+)\s+\| (\d+)\s+\| Yes\s+\| (\S+)\s+\| (\S+)\s+\| (\d+)\s+\|\s*$/
-              u.networks << UserNetwork.new($1, $4, true, $3, $5)
+            if line =~ /^\| \|\-\s+\| (\S+)\s+\| (\d+)\s+\| Yes\s+\| (\S+)\s+\| (\S+)\s+\| (\d+)\s+\|\s*(\S+|)\s*\|?\s*$/
+              net = UserNetwork.new($1, $4, true, $3, $5)
+              net.bindhost = $6 unless $6 == ""
+              u.networks << net
+            elsif line =~ /^\| \`\-\s+\| (\S+)\s+\| (\d+)\s+\| Yes\s+\| (\S+)\s+\| (\S+)\s+\| (\d+)\s+\|\s*(\S+|)\s*\|?\s*$/
+              net = UserNetwork.new($1, $4, true, $3, $5)
+              net.bindhost = $6 unless $6 == ""
+              u.networks << net
               break
-            elsif line =~ /^\| \|\-\s+\| (\S+)\s+\| (\d+)\s+\| No\s+\|\s+\|\s+\|\s+\|\s*$/
-              u.networks << UserNetwork.new($1, nil, false, nil, 0)
-            elsif line =~ /^\| \`\-\s+\| (\S+)\s+\| (\d+)\s+\| No\s+\|\s+\|\s+\|\s+\|\s*$/
-              u.networks << UserNetwork.new($1, nil, false, nil, 0)
+            elsif line =~ /^\| \|\-\s+\| (\S+)\s+\| (\d+)\s+\| No\s+\|\s+\|\s+\|\s+\|\s*(\S+|)\s*\|?\s*$/
+              net = UserNetwork.new($1, nil, false, nil, 0)
+              net.bindhost = $3 unless $3 == ""
+              u.networks << net
+            elsif line =~ /^\| \`\-\s+\| (\S+)\s+\| (\d+)\s+\| No\s+\|\s+\|\s+\|\s+\|\s*(\S+|)\s*\|?\s*$/
+              net = UserNetwork.new($1, nil, false, nil, 0)
+              net.bindhost = $3 unless $3 == ""
+              u.networks << net
               break
             elsif line =~ /^\| \w+/
               lines.unshift line

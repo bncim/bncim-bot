@@ -181,7 +181,6 @@ class AdminPlugin
     
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Channels")
     results.each do |user, network|
-      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + "  --".ljust(18) + "  --".ljust(60) + "--"
       if network.online
         m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.channels.to_s
       else
@@ -205,6 +204,7 @@ class AdminPlugin
     
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Channels")
     results.each do |user|
+      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + "  --".ljust(18) + "  --".ljust(60) + "--"
       user.networks.each do |network|
         if network.online
           m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.channels.to_s

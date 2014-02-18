@@ -144,11 +144,12 @@ class AdminPlugin
     if results.empty?
       m.reply "No results."
       return
-    end
-    m.reply Format(:bold, " Server  Username        Network           Userhost                                          Channels")
+    end 
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Channels")
     results.each do |user, network|
-      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(50) + "0"
+      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(60) + "--"
     end
+    m.reply Format(:bold, " End of list.")
   end
   
   def findnet(m, str, specserver = nil)
@@ -178,14 +179,16 @@ class AdminPlugin
       return
     end
     
-    m.reply Format(:bold, " Server  Username        Network           Userhost                                          Channels")
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Channels")
     results.each do |user, network|
+      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + "  --".ljust(18) + "  --".ljust(60) + "--"
       if network.online
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(50) + network.channels.to_s
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.channels.to_s
       else
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(50) + "0"
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(60) + "--"
       end
     end
+    m.reply Format(:bold, " End of list.")
   end
   
   def find(m, search_str, specserver = nil)
@@ -200,16 +203,17 @@ class AdminPlugin
       return
     end
     
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Channels")
     results.each do |user|
-      m.reply Format(:bold, " Server  Username        Network           Userhost                                          Channels")
       user.networks.each do |network|
         if network.online
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(50) + network.channels.to_s
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.channels.to_s
         else
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(50) + "0"
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(60) + "0"
         end
       end
     end
+    m.reply Format(:bold, " End of list.")
   end
   
   def stats(m)

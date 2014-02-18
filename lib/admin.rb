@@ -200,7 +200,7 @@ class AdminPlugin
     
     m.reply "#{results.size} results:"
     results.each do |user|
-      m.reply "#{Format(:bold, "[#{user.server}]"} Username: #{user.username} | Networks: #{user.networks.size}"
+      m.reply "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Networks: #{user.networks.size}"
       user.networks.each do |network|
         if network.online
           m.reply "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels}"

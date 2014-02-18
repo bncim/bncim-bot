@@ -164,9 +164,8 @@ class AdminPlugin
         user.networks.each do |network|
           if network.name =~ /#{str}/i or network.server =~ /#{str}/i
             if network.online
-              results << "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:green, "Connected")} to #{network.server} | User: #{network.user} | Channels: #{network.channels} | BindHost: #{network.bindhost}"
-            else
-              results << "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{network.name} | #{Format(:red, "Disconnected from IRC")} | BindHost: #{network.bindhost}"
+              results << "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{Format(:green, network.name)} -- user is #{Format(:green, "connected")} to #{network.server} as #{network.user} from #{network.bindhost} and is in #{network.channels} channels."
+              results << "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Network: #{Format(:red, network.name)} -- user is #{Format(:red, "disconnected from IRC")} with bindhost #{network.bindhost}."
             end
           end
         end
@@ -203,9 +202,9 @@ class AdminPlugin
       m.reply "#{Format(:bold, "[#{user.server}]")} Username: #{user.username} | Networks: #{user.networks.size}"
       user.networks.each do |network|
         if network.online
-          m.reply "   #{Format(:bold, "...")} Network: #{Format(:green, network.name)} | On: #{network.server} | Channels: #{network.channels} | BindHost: #{network.bindhost}"
+          m.reply "   #{Format(:bold, "...")} Network: #{Format(:green, network.name)} -- user is #{Format(:green, "connected")} to #{network.server} as #{network.user} from #{network.bindhost} and is in #{network.channels} channels."
         else
-          m.reply "   #{Format(:bold, "...")} Network: #{Format(:red, network.name)} | On: N/A | Channels: N/A | BindHost: #{network.bindhost}"
+          m.reply "   #{Format(:bold, "...")} Network: #{Format(:red, network.name)} -- user is #{Format(:red, "disconnected from IRC")} with bindhost #{network.bindhost}."
         end
       end
     end

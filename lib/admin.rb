@@ -147,7 +147,7 @@ class AdminPlugin
     end 
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Channels")
     results.each do |user, network|
-      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(60) + "--"
+      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name) 
     end
     m.reply Format(:bold, " End of list.")
   end
@@ -184,7 +184,7 @@ class AdminPlugin
       if network.online
         m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.channels.to_s
       else
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(60) + "--"
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name)
       end
     end
     m.reply Format(:bold, " End of list.")
@@ -204,12 +204,12 @@ class AdminPlugin
     
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Channels")
     results.each do |user|
-      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + "  --".ljust(18) + "  --".ljust(60) + "--"
+      m.reply " " + user.server.ljust(8) + user.username
       user.networks.each do |network|
         if network.online
           m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.channels.to_s
         else
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(18)) + "network offline".ljust(60) + "0"
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name) 
         end
       end
     end

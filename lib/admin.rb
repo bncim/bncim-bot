@@ -147,7 +147,7 @@ class AdminPlugin
     end 
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost")
     results.each do |user, network|
-      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost 
+      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost.to_s
     end
     m.reply Format(:bold, " End of list.")
   end
@@ -182,9 +182,9 @@ class AdminPlugin
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost")
     results.each do |user, network|
       if network.online
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost.to_s
       else
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost.to_s
       end
     end
     m.reply Format(:bold, " End of list.")
@@ -207,9 +207,9 @@ class AdminPlugin
       m.reply " " + user.server.ljust(8) + user.username
       user.networks.each do |network|
         if network.online
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost.to_s
         else
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost.to_s
         end
       end
     end

@@ -145,9 +145,9 @@ class AdminPlugin
       m.reply "No results."
       return
     end 
-    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost            Channels")
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost                        Channels")
     results.each do |user, network|
-      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost 
+      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(90)) + network.bindhost 
     end
     m.reply Format(:bold, " End of list.")
   end
@@ -179,12 +179,12 @@ class AdminPlugin
       return
     end
     
-    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost            Channels")
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost                        Channels")
     results.each do |user, network|
       if network.online
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost.ljust(20) + network.channels.to_s
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost.ljust(42) + network.channels.to_s
       else
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(90)) + network.bindhost
       end
     end
     m.reply Format(:bold, " End of list.")
@@ -202,14 +202,14 @@ class AdminPlugin
       return
     end
     
-    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Channels")
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost                        Channels")
     results.each do |user|
       m.reply " " + user.server.ljust(8) + user.username
       user.networks.each do |network|
         if network.online
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.channels.to_s
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost.ljust(42) + network.channels.to_s
         else
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(90)) + network.bindhost
         end
       end
     end

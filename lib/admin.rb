@@ -147,7 +147,7 @@ class AdminPlugin
     end 
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost")
     results.each do |user, network|
-      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(90)) + network.bindhost 
+      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost 
     end
     m.reply Format(:bold, " End of list.")
   end
@@ -184,7 +184,7 @@ class AdminPlugin
       if network.online
         m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost
       else
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(90)) + network.bindhost
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost
       end
     end
     m.reply Format(:bold, " End of list.")
@@ -209,7 +209,7 @@ class AdminPlugin
         if network.online
           m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost
         else
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(90)) + network.bindhost
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost
         end
       end
     end

@@ -223,7 +223,7 @@ module ZNC
       sock.puts "PRIVMSG *status LISTALLUSERNETWORKS"
     end
     
-    def update_data(loop = false)
+    def update_data(doloop = false)
       @servers.each do |name, server|
         begin
           sock = init_sock(server.username, server.password, server.addr, server.port)
@@ -257,7 +257,7 @@ module ZNC
         end
       end
       sleep 30
-      update_data if loop
+      update_data if doloop
     end
   end
 end

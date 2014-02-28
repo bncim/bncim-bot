@@ -99,8 +99,8 @@ class AdminPlugin
   
   def update(m)
     if m.channel == "#bnc.im-admin"
-      ZNC::UserDB.update
-      m.reply "Updated."
+      $userdb.update
+      m.reply "Updated user data."
     end
   end
   

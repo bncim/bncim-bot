@@ -149,7 +149,7 @@ module ZNC
     
     def initialize(servers)
       @servers = servers
-      Thread.new { update_data }
+      Thread.new { update_data(true) }
     end
     
     def username_available?(username)
@@ -204,47 +204,60 @@ module ZNC
       return networks
     end
     
+    def update
+      update_data()
+    end
+    
     private
     
-    def update_data
+    def init_sock(user, pass, addr, port)
+      sock = TCPSocket.new(addr, port)
+      ssl_context = OpenSSL::SSL::SSLContext.new
+      ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      sock = OpenSSL::SSL::SSLSocket.new(sock, ssl_context)
+      sock.sync = true
+      sock.connect
+      sock.puts "NICK bncbot"
+      sock.puts "USER bncbot bncbot bncbot :bncbot"
+      sock.puts "PASS #{user}:#{pass}"
+      sock.puts "PRIVMSG *status LISTALLUSERNETWORKS"
+    end
+    
+    def update_data(loop = false)
       @servers.each do |name, server|
-        sock = TCPSocket.new(server.addr, server.port)
-        ssl_context = OpenSSL::SSL::SSLContext.new
-        ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        sock = OpenSSL::SSL::SSLSocket.new(sock, ssl_context)
-        sock.sync = true
-        sock.connect
-        sock.puts "NICK bncbot"
-        sock.puts "USER bncbot bncbot bncbot :bncbot"
-        sock.puts "PASS #{server.username}:#{server.password}"
-        sock.puts "PRIVMSG *status LISTALLUSERNETWORKS"
-                
-        lines = Array.new
+        begin
+          sock = init_sock(server.username, server.password, server.addr, server.port)
         
-        while line = sock.gets
-          if line =~ /^:\*status!znc@bnc.im PRIVMSG bncbot :(\+\-+.+)/
-            lines << $1
-            while line = sock.gets
-              c = 0
-              if line =~ /^:\*status!znc@bnc.im PRIVMSG bncbot :(\|.+)/
-                lines << $1
-              elsif line =~ /^:\*status!znc@bnc.im PRIVMSG bncbot :(\+\-+.+)/
-                lines << $1
-                if lines.size > 3
-                  sock.close
-                  break
+          lines = Array.new
+        
+          while line = sock.gets
+            if line =~ /^:\*status!znc@bnc.im PRIVMSG bncbot :(\+\-+.+)/
+              lines << $1
+              while line = sock.gets
+                c = 0
+                if line =~ /^:\*status!znc@bnc.im PRIVMSG bncbot :(\|.+)/
+                  lines << $1
+                elsif line =~ /^:\*status!znc@bnc.im PRIVMSG bncbot :(\+\-+.+)/
+                  lines << $1
+                  if lines.size > 3
+                    break
+                  end
                 end
               end
+              break
             end
-            break
-          end
-        end
-        users = UserNetworksParser.parse(server.name, lines)
+          end        
+          sock.close
+          users = UserNetworksParser.parse(server.name, lines)
         
-        @servers[server.name].users = users
+          @servers[server.name].users = users
+        rescue => e
+          puts "Could not update server: #{name}."
+          next
+        end
       end
-      sleep 60
-      update_data
+      sleep 30
+      update_data if loop
     end
   end
 end

@@ -84,6 +84,7 @@ class AdminPlugin
   match "offline", method: :offline
   match /netcount (\S+)/, method: :netcount
   match /crawl (\S+) (\+?\d+)/, method: :crawl
+  match "update", method: :update
   
   match "help", method: :help
   
@@ -92,10 +93,16 @@ class AdminPlugin
       m.reply "Admin commands:"
       m.reply "!unconfirmed | !pending | !reqinfo <id> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask>"
       m.reply "!addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname> | !approve <id> <ip> [irc server] [irc port] | !todo | !reports | !clear <reportid> [message] | !offline"
-      m.reply "!find <user regexp> | !findnet <regexp> | !crawl <server> <port> | !netcount <regexp> | !stats"
+      m.reply "!find <user regexp> | !findnet <regexp> | !crawl <server> <port> | !netcount <regexp> | !stats | !update"
     end
   end
   
+  def update(m)
+    if m.channel == "#bnc.im-admin"
+      ZNC::UserDB.update
+      m.reply "Updated."
+    end
+  end
   
   def crawl(m, server, port)
     return unless m.channel == "#bnc.im-admin"

@@ -257,8 +257,10 @@ module ZNC
           next
         end
       end
-      sleep 30
-      update_data if doloop
+      if doloop
+        sleep 30
+        update_data
+      end
     end
   end
 end

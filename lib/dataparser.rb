@@ -221,6 +221,7 @@ module ZNC
       sock.puts "USER bncbot bncbot bncbot :bncbot"
       sock.puts "PASS #{user}:#{pass}"
       sock.puts "PRIVMSG *status LISTALLUSERNETWORKS"
+      return sock
     end
     
     def update_data(doloop = false)

@@ -182,20 +182,20 @@ class RequestPlugin
   def request(m, username, email, server, port, reqserver = nil)
     return if RequestDB.ignored?(m.user.mask)
     if RequestDB.email_used?(email)
-      m.reply "Sorry, that email has already been used. Please contact an " + \
-              "operator if you need help."
+      m.reply "#{Format(:bold, "Error:")} That email has already been used. We only permit one account per user. If you " + \
+              "need to add a network, use !request."
       return
     end
     
     unless $userdb.username_available?(username)
-      m.reply "Error: that username has already been used. Please try another, or " + \
+      m.reply "#{Format(:bold, "Error:")} that username has already been used. Please try another, or " + \
               "contact an operator for help."
       return
     end
     
     unless reqserver.nil?
       unless $config["zncservers"].keys.include? reqserver.downcase
-        m.reply "Error: #{reqserver} is not a valid bnc.im server. " + \
+        m.reply "#{Format(:bold, "Error:")} #{reqserver} is not a valid bnc.im server. " + \
                 "Please pick from: #{$config["zncservers"].keys.join(", ")}"
         return
       end
@@ -204,12 +204,12 @@ class RequestPlugin
     $config["blacklist"].each do |entry, reason|
       if server =~ /#{entry}/i
         if reason.nil?
-          m.reply "Error: the server #{server} appears to be on our " + \
+          m.reply "#{Format(:bold, "Error:")} the server #{server} appears to be on our " + \
                   "network blacklist. Please see http://bnc.im/blacklist" + \
                   " or contact an operator for more details."
           return
         else
-          m.reply "Error: #{reason}"
+          m.reply "#{Format(:bold, "Error:")} #{reason}"
           return
         end
       end
@@ -219,6 +219,16 @@ class RequestPlugin
       m.reply "Error: that email is not valid."
       return
     end
+    
+    if r.port == "+6667"
+      m.reply "#{Format(:bold, "Error:")} Port #{r.port} is invalid. If you want to use SSL, put a + infront of an SSL-ENABLED" + \
+              " port. Plaintext ports cannot accept SSL connections."
+      return
+    elsif r.port == "6697"
+      m.reply "#{Format(:bold, "Error:")} Port #{r.port} is invalid. If you want to use SSL, put a + infront of the port."
+      return
+    end
+    
     
     r = RequestDB.create(m.user.mask, username, email, server,\
                          port, @bot.irc.network.name)
@@ -261,11 +271,7 @@ class RequestPlugin
       Mail.request_waiting(email, r)
     end
     adminmsg("#{Format(:red, "[NEW REQUEST]")} #{format_status(r)}")
-    
-    if r.port == "+6667" or r.port == "6697" 
-      adminmsg("#{Format(:bold, "Warning:")} Port selected by the user is #{r.port}.")
-    end
-    
+        
     adminmsg "Attempting to crawl #{r.server}:#{r.port} (timeout 20 sec)"
     
     begin

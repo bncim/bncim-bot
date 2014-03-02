@@ -220,12 +220,12 @@ class RequestPlugin
       return
     end
     
-    if r.port == "+6667"
-      m.reply "#{Format(:bold, "Error:")} Port #{r.port} is invalid. If you want to use SSL, put a + infront of an SSL-ENABLED" + \
+    if port == "+6667"
+      m.reply "#{Format(:bold, "Error:")} Port #{port} is invalid. If you want to use SSL, put a + infront of an SSL-ENABLED" + \
               " port. Plaintext ports cannot accept SSL connections."
       return
-    elsif r.port == "6697"
-      m.reply "#{Format(:bold, "Error:")} Port #{r.port} is invalid. If you want to use SSL, put a + infront of the port."
+    elsif port == "6697"
+      m.reply "#{Format(:bold, "Error:")} Port #{port} is invalid. If you want to use SSL, put a + infront of the port."
       return
     end
     

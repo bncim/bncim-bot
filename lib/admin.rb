@@ -225,8 +225,8 @@ class AdminPlugin
   end
   
   def stats(m)
-    m.reply "[Stats] Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
     return unless m.channel == "#bnc.im-admin"
+    m.reply "[Stats] Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
     servers = []
     $userdb.servers.each do |name, server|
       servers << "#{name}: #{server.users_count}/#{server.networks_count}"

@@ -151,8 +151,14 @@ class RequestPlugin
   match /web/i, method: :web
   match /verify\s+(\d+)\s+(\S+)/i, method: :verify
   match /servers/i, method: :servers
+	match "stats", method: :stats
   
   match "help", method: :help
+
+	def stats(m)
+    return unless m.channel == "#bnc.im"
+	  m.reply "[Stats] Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
+  end
   
   def detailed_help(m, args)
     split = args.split(" ")

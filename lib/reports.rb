@@ -157,12 +157,14 @@ class ReportPlugin
       return
     end
     
+    report = ReportDB.reports[id.to_i]
+    
     ReportDB.clear(id.to_i)
     m.reply("Report ##{id} cleared.")
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
-                     " :Report ##{id} has been cleared by #{m.user.nick} (#{response})")
+                     " :Report ##{id} for #{report.source.split("!")[0]} has been cleared by #{m.user.nick} (#{response})")
       rescue => e
         # pass
       end

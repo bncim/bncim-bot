@@ -64,7 +64,7 @@ class Mail
       
       #{reason}
       
-      If you wish to appeal this decision, please join us in irc.interlinked.me #bnc.im or join our webchat at
+      If you wish to appeal this decision, please join us in irc.freenode.net #bnc.im or join our webchat at
       https://bnc.im/webchat. Alternatively, email us at admin@bnc.im.
       
       Regards,
@@ -183,7 +183,7 @@ class Mail
       #{user}/#{network}:#{pass}
 
       If you need any help, please do not hestitate to join our IRC 
-      channel: irc.interlinked.me #bnc.im - or connect to our webchat
+      channel: irc.freenode.net #bnc.im - or connect to our webchat
       at https://bnc.im/webchat. Please make sure you have read and
       reviewed our Terms of Service at http://bnc.im/terms-of-service.
       

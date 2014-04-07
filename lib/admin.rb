@@ -60,8 +60,8 @@ class AdminPlugin
   match /kick (\S+) (.+)$/, method: :kick
   match /topic (.+)/, method: :topic
   match /approve\s+(\d+)\s+(\S+)\s*$/, method: :approve, group: :approve
-  match /approve\s+(\d+)\s+(\S+)\s+([a-zA-Z\-])\s*$/, method: :approve, group: :approve
-  match /approve\s+(\d+)\s+(\S+)\s+([a-zA-Z\-])\s+(.+)\s*$/, method: :approve, group: :approve
+  match /approve\s+(\d+)\s+(\S+)\s+([a-zA-Z\-]+)\s*$/, method: :approve, group: :approve
+  match /approve\s+(\d+)\s+(\S+)\s+([a-zA-Z\-]+)\s+(.+)\s*$/, method: :approve, group: :approve
   match /reject\s+(\d+)\s+(.+)\s*$/, method: :reject
   match /delete\s+(\d+)/, method: :delete
   match /reqinfo\s+(\d+)/, method: :reqinfo

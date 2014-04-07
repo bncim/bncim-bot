@@ -426,6 +426,7 @@ class AdminPlugin
         # pass
       end
     end
+    $userdb.update
   end
   
   def reject(m, id, reason)

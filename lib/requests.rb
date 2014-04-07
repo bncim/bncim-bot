@@ -152,12 +152,51 @@ class RequestPlugin
   match /verify\s+(\d+)\s+(\S+)/i, method: :verify
   match /servers/i, method: :servers
 	match "stats", method: :stats
+  match /uptime\s+(\w+)\s*/i, method: :uptime
   
   match "help", method: :help
 
 	def stats(m)
     return unless m.channel == "#bnc.im"
-	  m.reply "[Stats] Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
+	  m.reply "#{Format(:bold, "[Stats]")} Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
+    relay_cmd_reply "#{Format(:bold, "[Stats]")} Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
+  end
+  
+  def uptime(m, server)
+    return unless m.channel == "#bnc.im-admin"
+    server.downcase!
+    unless $zncs.has_key? server
+      m.reply "Server \"#{server}\" not found."
+      return
+    end
+    sock = TCPSocket.new($config["zncservers"][server]["addr"], $config["zncservers"][server]["port"].to_i)
+    ssl_context = OpenSSL::SSL::SSLContext.new
+    ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    sock = OpenSSL::SSL::SSLSocket.new(sock, ssl_context)
+    sock.sync = true
+    sock.connect
+    sock.puts "NICK bncbot"
+    sock.puts "USER bncbot bncbot bncbot :bncbot"
+    sock.puts "PASS #{$config["zncservers"][server]["username"]}:#{$config["zncservers"][server]["password"]}"
+    sock.puts "PRIVMSG *status :uptime"
+    
+    Thread.new do
+      Timeout::timeout(10) do
+        while line = sock.gets
+          if line =~ /^:\*status!znc@bnc\.im PRIVMSG bncbot :(.+)$/
+            m.reply "#{Format(:bold, "[#{server}]")} #{$1}"
+            relay_cmd_reply "#{Format(:bold, "[#{server}]")} #{$1}"
+          end
+        end
+      end
+    end
+  end
+  
+  def relay_cmd_reply(text)
+    netname = @bot.irc.network.name.to_s.downcase
+    network = Format(:bold, "[#{colorise(netname)}]")
+    relay_reply = "#{network} <@#{@bot.nick}> #{text}"
+    send_relay(relay_reply)
   end
   
   def detailed_help(m, args)
@@ -315,4 +354,18 @@ class RequestPlugin
        Format(:bold, "#{r.reqserver || "N/A"}"), 
        Format(:bold, r.confirmed?.to_s), Format(:bold, r.approved?.to_s)]
   end
+  
+  def send_relay(m)
+    $bots.each do |network, bot|
+      unless bot.irc.network.name.to_s.downcase == @bot.irc.network.name.to_s.downcase
+        begin
+          bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
+                       " :#{m}")
+        rescue => e
+          # pass
+        end
+      end
+    end
+  end
+  
 end

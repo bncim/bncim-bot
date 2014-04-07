@@ -228,7 +228,7 @@ class RequestPlugin
     return if RequestDB.ignored?(m.user.mask)
     if RequestDB.email_used?(email)
       m.reply "#{Format(:bold, "Error:")} That email has already been used. We only permit one account per user. If you " + \
-              "need to add a network, use !request."
+              "need to add a network, use !report."
       return
     end
     

@@ -60,7 +60,8 @@ class AdminPlugin
   match /kick (\S+) (.+)$/, method: :kick
   match /topic (.+)/, method: :topic
   match /approve\s+(\d+)\s+(\S+)\s*$/, method: :approve, group: :approve
-  match /approve\s+(\d+)\s+(\S+)\s+(.+)\s*$/, method: :approve, group: :approve
+  match /approve\s+(\d+)\s+(\S+)\s+([a-zA-Z\-])\s*$/, method: :approve, group: :approve
+  match /approve\s+(\d+)\s+(\S+)\s+([a-zA-Z\-])\s+(.+)\s*$/, method: :approve, group: :approve
   match /reject\s+(\d+)\s+(.+)\s*$/, method: :reject
   match /delete\s+(\d+)/, method: :delete
   match /reqinfo\s+(\d+)/, method: :reqinfo
@@ -352,7 +353,7 @@ class AdminPlugin
     m.reply "kicked #{target} in all channels (#{reason})"
   end
   
-  def approve(m, id, ip, addr = nil)
+  def approve(m, id, ip, adminnetname = nil, addr = nil)
     return unless m.channel == "#bnc.im-admin"
     unless RequestDB.requests.has_key?(id.to_i)
       m.reply "Error: request ##{id} not found."
@@ -379,8 +380,13 @@ class AdminPlugin
     end
     
     password = RequestDB.gen_key(15)
-    netname = Domainatrix.parse(r.server).domain
-    netname = Domainatrix.parse(addr.split(" ")[0]).domain unless addr.nil?
+    
+    if adminnetname.nil?
+      netname = Domainatrix.parse(r.server).domain
+      netname = Domainatrix.parse(addr.split(" ")[0]).domain unless addr.nil?
+    else
+      netname = adminnetname
+    end
         
     $zncs[server].irc.send(msg_to_control("CloneUser templateuser #{r.username}"))
     $zncs[server].irc.send(msg_to_control("Set Nick #{r.username} #{r.username}"))
@@ -410,7 +416,8 @@ class AdminPlugin
     $config["notifymail"].each do |email|
       Mail.send_approved_admin(email, r.id, m.user.mask.to_s)
     end
-    adminmsg("Request ##{id} approved to #{server} (#{ip}) by #{m.user}.")
+    adminmsg("Request ##{id} for #{netname} approved to #{server} (#{ip}) by #{m.user}. Password: #{password}")
+    adminmsg("Do not forget to update the spreadsheet: http://bit.ly/1lFDgj5")
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \

@@ -93,7 +93,7 @@ class AdminPlugin
     if m.channel == "#bnc.im-admin"
       m.reply "Admin commands:"
       m.reply "!unconfirmed | !pending | !reqinfo <id> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask>"
-      m.reply "!addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname> | !approve <id> <ip> [irc server] [irc port] | !todo | !reports | !clear <reportid> [message] | !offline"
+      m.reply "!addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname> | !approve <id> <ip> [network name] [irc server] [irc port] | !todo | !reports | !clear <reportid> [message] | !offline"
       m.reply "!find <user regexp> | !findnet <regexp> | !crawl <server> <port> | !netcount <regexp> | !stats | !update"
     end
   end

@@ -184,7 +184,7 @@ class RequestPlugin
         while line = sock.gets
           if line =~ /^:\*status!znc@bnc\.im PRIVMSG bncbot :(.+)$/
             m.reply "#{Format(:bold, "[#{server}]")} #{$1}"
-            relay_cmd_reply "#{Format(:bold, "[#{server}]")} #{$1}"
+            relay_cmd_reply "#{Format(:bold, "[#{server}]")} #{$1}" if m.channel == "#bnc.im"
           end
         end
       end

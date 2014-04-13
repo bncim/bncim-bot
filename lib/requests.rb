@@ -160,7 +160,7 @@ class RequestPlugin
 	def pricks(m)
 		m.reply "#{Format(:bold, "[Pricks]")} Robby"
 		return unless m.channel == "#bnc.im"
-		reply_cmd_reply "#{Format(:bold, "[Pricks]")} Robby"
+		relay_cmd_reply "#{Format(:bold, "[Pricks]")} Robby"
 	end
 
 	def stats(m)

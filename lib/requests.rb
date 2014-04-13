@@ -152,9 +152,16 @@ class RequestPlugin
   match /verify\s+(\d+)\s+(\S+)/i, method: :verify
   match /servers/i, method: :servers
 	match "stats", method: :stats
+	match "pricks", method: :pricks
   match /uptime\s+(\w+)\s*/i, method: :uptime
   
   match "help", method: :help
+
+	def pricks(m)
+		m.reply "#{Format(:bold, "[Pricks]")} Robby"
+		return unless m.channel == "#bnc.im"
+		reply_cmd_reply "#{Format(:bold, "[Pricks]")} Robby"
+	end
 
 	def stats(m)
     return unless m.channel == "#bnc.im"

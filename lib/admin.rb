@@ -97,7 +97,7 @@ class AdminPlugin
   
   def genpass(m, len)
     return unless m.channel == "#bnc.im-admin"
-    m.reply RequestDB.gen_key(len)
+    m.reply RequestDB.gen_key(len.to_i)
   end
   
   def spreadsheet(m)

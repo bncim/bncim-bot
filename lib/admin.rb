@@ -411,6 +411,8 @@ class AdminPlugin
     $zncs[server].irc.send(msg_to_control("Set DenySetBindHost #{r.username} true"))
     $zncs[server].irc.send(msg_to_control("Set Password #{r.username} #{password}"))
     
+    netname.downcase!
+    
     Thread.new do
       sleep 3
       $zncs[server].irc.send(msg_to_control("AddNetwork #{r.username} #{netname}"))

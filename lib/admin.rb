@@ -1,6 +1,7 @@
 require 'socket'
 require 'openssl'
 require 'timeout'
+require 'time_diff'
 
 class Crawler
   def self.crawl(server, port)
@@ -86,8 +87,14 @@ class AdminPlugin
   match /netcount (\S+)/, method: :netcount
   match /crawl (\S+) (\+?\d+)/, method: :crawl
   match "update", method: :update
+  match "data", method: :data
   
   match "help", method: :help
+  
+  def data(m)
+    return unless m.channel == "#bnc.im-admin"
+    m.reply "The current set of user data was updated at: #{Format(:bold, $userdb.updated.ctime)} (#{Time.diff($userdb.updated, Time.now)[:diff]} ago)"
+  end
   
   def help(m)
     if m.channel == "#bnc.im-admin"

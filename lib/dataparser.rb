@@ -105,11 +105,12 @@ module ZNC
   end
   
   class UserDB
-    attr_reader :servers
+    attr_reader :servers, :updated
     
     def initialize(servers)
       @servers = servers
-      Thread.new { update_data(true) }
+      @updated = nil
+      Thread.new { update_data() }
     end
     
     def username_available?(username)
@@ -184,7 +185,7 @@ module ZNC
       return sock
     end
     
-    def update_data(doloop = false)
+    def update_data()
       @servers.each do |name, server|
         begin
           sock = init_sock(server.username, server.password, server.addr, server.port)
@@ -212,14 +213,11 @@ module ZNC
           users = UserNetworksParser.parse(server.name, lines)
         
           @servers[server.name].users = users
+          @updated = Time.now
         rescue => e
           puts "Could not update server: #{name}."
           next
         end
-      end
-      if doloop
-        sleep 30
-        update_data
       end
     end
   end

@@ -654,12 +654,12 @@ class AdminPlugin
   end
   
   def format_status(r)
-    "%s Source: %s on %s / Username: %s / Email: %s / Date: %s / Server: %s / Port: %s / Confirmed: %s / Approved: %s" %
+    "%s Source: %s on %s / Username: %s / Email: %s / Date: %s / Server: %s / Port: %s / Status: %s" %
       [Format(:bold, "[##{r.id}]"), Format(:bold, r.source.to_s), 
        Format(:bold, r.ircnet.to_s), Format(:bold, r.username.to_s),
        Format(:bold, r.email.to_s), Format(:bold, Time.at(r.ts).ctime),
        Format(:bold, r.server), Format(:bold, r.port.to_s),
-       Format(:bold, r.confirmed?.to_s), Format(:bold, r.approved?.to_s)]
+       Format(:bold, r.english_status)]
   end
   
   def adminmsg(text)

@@ -511,7 +511,7 @@ class AdminPlugin
         ipv6.each do |ip|
           reply = reply + "#{name}-6-#{ipv6.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.ljust(2)}) | "
         end
-        m.reply reply
+        m.reply reply[0..-4]
       end
     end
   end

@@ -193,6 +193,7 @@ class AdminPlugin
         return "#{name}-6-#{ipv6.index(ip)}"
       end
     end
+    return ip
   end
   
   def offline(m)

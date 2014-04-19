@@ -33,7 +33,7 @@ class RequestDB
     file = File.open(file, 'w')
     csv_string = CSV.generate do |csv|
       @@requests.each_value do |r|
-        csv << [r.id, r.ts, r.key, r.source, r.email, r.server, \
+        csv << [r.id, r.ts.to_i, r.key, r.source, r.email, r.server, \
           r.port, r.username, r.status, r.ircnet]
       end
     end

@@ -117,6 +117,7 @@ class AdminPlugin
     return unless m.channel == "#bnc.im-admin"
     if interface =~ /^([a-z]{3}\d{1})\-(4|6)\-(\d+)$/
       server, proto, index = $1, $2, $3
+      index.to_i!
       if proto == "4"
         m.reply Format(:bold, "[#{interface}]") + " " + $config["ips"][server]["ipv4"][index]
       elsif proto == "6"

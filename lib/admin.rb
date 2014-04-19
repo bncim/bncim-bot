@@ -107,7 +107,7 @@ class AdminPlugin
     m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> [network name] [irc server] [irc port]"
     m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
     m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname>"
-    m.reply "#{Format(:bold, "[MANAGEMENT]")} !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic [--append/--prepend] <topic> (does not work on QN)"
+    m.reply "#{Format(:bold, "[MANAGEMENT]")} !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
     m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port>"
   end
@@ -280,16 +280,8 @@ class AdminPlugin
 
   def topic(m, topic)
     return unless m.channel == "#bnc.im-admin"
-    command = "TOPIC"
-    if topic.split(" ")[0] == "--append"
-      command = "TOPICAPPEND"
-      topic = topic.split(" ")[1..-1].join(" ")
-    elsif topic.split(" ")[0] == "--prepend"
-      command = "TOPICPREPEND"
-      topic = topic.split(" ")[1..-1].join(" ")
-    end
     $bots.each_value do |bot|
-      bot.irc.send("PRIVMSG ChanServ :#{command} #bnc.im #{topic}")
+      bot.Channel("#bnc.im").topic = topic
     end
     m.reply "done!"
   end

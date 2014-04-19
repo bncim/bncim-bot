@@ -104,12 +104,24 @@ class AdminPlugin
   
   def help(m)
     return unless m.channel == "#bnc.im-admin"
-    m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> [network name] [irc server] [irc port]"
+    m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !approve <id> <ip> [network name] [irc server] [irc port]"
     m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
     m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname>"
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
-    m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port>"
+    m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port> | !servers | !seeip <interface>" 
+  end
+  
+  def seeip(m, interface)
+    return unless m.channel == "#bnc.im-admin"
+    if interface =~ /^([a-z]{3}\d{1})\-(4|6)\-(\d+)$/
+      server, proto, index = $1, $2, $3
+      if proto == "4"
+        m.reply Format(:bold, "[#{interface}]") + " " + $config["ips"][server]["ipv4"][index]
+      elsif proto == "6"
+        m.reply Format(:bold, "[#{interface}]") + " " + $config["ips"][server]["ipv6"][index]
+      end
+    end
   end
   
   def update(m)

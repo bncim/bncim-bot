@@ -91,9 +91,14 @@ class AdminPlugin
   match "spreadsheet", method: :spreadsheet
   match /seeip (\S+)/i, method: :seeip
   match /seeinterface (\S+)/i, method: :seeinterface
-  
+  match /genpass (\d+)/i, method: :genpass
   
   match "help", method: :help
+  
+  def genpass(m, len)
+    return unless m.channel == "#bnc.im-admin"
+    m.reply RequestDB.gen_key(len)
+  end
   
   def spreadsheet(m)
     return unless m.channel == "#bnc.im-admin"
@@ -112,8 +117,8 @@ class AdminPlugin
     m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname>"
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
-    m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip>" 
-  end
+    m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
+  end 
   
   def seeip(m, interface)
     return unless m.channel == "#bnc.im-admin"

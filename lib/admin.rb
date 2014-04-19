@@ -89,6 +89,7 @@ class AdminPlugin
   match "update", method: :update
   match "data", method: :data
   match "spreadsheet", method: :spreadsheet
+  match /seeip (\S+)/i, method: :seeip
   
   match "help", method: :help
   

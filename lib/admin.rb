@@ -88,8 +88,14 @@ class AdminPlugin
   match /crawl (\S+) (\+?\d+)/, method: :crawl
   match "update", method: :update
   match "data", method: :data
+  match "spreadsheet", method: :spreadsheet
   
   match "help", method: :help
+  
+  def spreadsheet(m)
+    return unless m.channel == "#bnc.im-admin"
+    m.reply "http://bit.ly/1lFDgj5"
+  end
   
   def data(m)
     return unless m.channel == "#bnc.im-admin"

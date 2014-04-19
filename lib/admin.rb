@@ -99,7 +99,7 @@ class AdminPlugin
   def help(m)
     return unless m.channel == "#bnc.im-admin"
     m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> [network name] [irc server] [irc port]"
-    m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message]"
+    m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
     m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname>"
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic [--append/--prepend] <topic> (does not work on QN)"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"

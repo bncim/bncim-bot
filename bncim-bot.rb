@@ -67,7 +67,7 @@ $config["zncservers"].each do |name, server|
   bot.loggers.clear
 	bot.loggers << BNCLogger.new(name, File.open("log/znc-#{name}.log", "a"))
 	bot.loggers << BNCLogger.new(name, STDOUT)
-	bot.loggers.level = :info
+	bot.loggers.level = :error
 	$zncs[name] = bot
 end
 
@@ -83,15 +83,19 @@ end
 
 $userdb = ZNC::UserDB.new(servers)
 
+puts "Initialization complete. Starting bots..."
+
 # Start the bots
 
 $zncs.each do |key, bot|
-	$threads << Thread.new { bot.start }
+	$threads << Thread.new { bot.start; puts "ZNC bot for #{key} started." }
 end
 
 $bots.each do |key, bot|
-  $threads << Thread.new { bot.start }
+  $threads << Thread.new { bot.start; puts "IRC bot for #{key} started." }
 end
+
+m.reply "Bots started!"
 
 sleep 5
 

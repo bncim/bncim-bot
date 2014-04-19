@@ -17,7 +17,7 @@ class RequestDB
 
   def self.load(file)
     unless File.exists?(file)
-      puts "Error: request db #{file} does not exist. Skipping loading."
+      puts "Warning: request db #{file} does not exist. Skipping loading."
       return
     end
     

@@ -7,7 +7,7 @@ class ReportDB
 
   def self.load(file)
     unless File.exists?(file)
-      puts "Error: report db #{file} does not exist. Skipping loading."
+      puts "Warning: report db #{file} does not exist. Skipping loading."
       return
     end
     

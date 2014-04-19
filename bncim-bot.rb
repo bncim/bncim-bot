@@ -95,7 +95,7 @@ $bots.each do |key, bot|
   $threads << Thread.new { bot.start; puts "IRC bot for #{key} started." }
 end
 
-m.reply "Bots started!"
+puts "Bots started!"
 
 sleep 5
 

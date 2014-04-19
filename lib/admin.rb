@@ -196,7 +196,7 @@ class AdminPlugin
       ipv4, ipv6 = addrs["ipv4"], addrs["ipv6"]
       if ipv4.include? ip
         return "#{name}-4-#{ipv4.index(ip)}"
-      elsif ipv6.include? ip
+      elsif !ipv6.nil? and ipv6.include? ip 
         return "#{name}-6-#{ipv6.index(ip)}"
       end
     end

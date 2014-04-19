@@ -123,8 +123,8 @@ class Request
     @ircnet = ircnet
     @email = email
     @server = server
-    @port = port
-    @status = status
+    @port = port.to_i
+    @status = status.to_i
   end
 
   def approved?

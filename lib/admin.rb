@@ -634,12 +634,7 @@ class AdminPlugin
   def unconfirmed(m)
     return unless m.channel == "#bnc.im-admin"
     
-    unconfirmed = Array.new
-    RequestDB.requests.each_value do |r|
-      unless r.confirmed?
-        unconfirmed << r unless r.approved?
-      end
-    end
+    unconfirmed = RequestDB.requests.select { |r| r.status == 1 }
     
     if unconfirmed.empty?
       m.reply "No unconfirmed requests. Try !pending?"

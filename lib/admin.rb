@@ -126,23 +126,28 @@ class AdminPlugin
       elsif proto == "6"
         proto = "ipv6"
       else
-        m.reply "Invalid interface."
+        m.reply "Error: Invalid interface."
         return
       end
       
       unless $config["ips"].has_key? server
-        m.reply "Invalid interface."
+        m.reply "Error: Invalid interface."
+        return
+      end
+      
+      if proto == "ipv6" and !$config["ips"][server].has_key? 'ipv6'
+        m.reply "Error: Invalid interface."
         return
       end
       
       if $config["ips"][server][proto][index].nil?
-        m.reply "Invalid interface."
+        m.reply "Error: Invalid interface."
         return
       end
       
       m.reply Format(:bold, "[#{interface}]") + " " + $config["ips"][server][proto][index]
     else
-      m.reply "Invalid interface."
+      m.reply "Error: Invalid interface."
     end
   end
   
@@ -454,6 +459,11 @@ class AdminPlugin
         return
       end
       
+      if proto == "ipv6" and !$config["ips"][server].has_key? 'ipv6'
+        m.reply "Error: Invalid interface."
+        return
+      end
+      
       if $config["ips"][server][proto][index].nil?
         m.reply "Error: Invalid interface."
         return
@@ -586,8 +596,10 @@ class AdminPlugin
         ipv4.each do |ip|
           reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.rjust(2, '0')}), "
         end
-        ipv6.each do |ip|
-          reply = reply + "#{name}-6-#{ipv6.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.rjust(2, '0')}), "
+        unless ipv6.nil?
+          ipv6.each do |ip|
+            reply = reply + "#{name}-6-#{ipv6.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.rjust(2, '0')}), "
+          end
         end
         m.reply reply[0..-3]
       end

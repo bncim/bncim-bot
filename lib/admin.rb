@@ -118,12 +118,27 @@ class AdminPlugin
     if interface =~ /^([a-z]{3}\d{1})\-(4|6)\-(\d+)$/
       server, proto, index = $1, $2, $3
       index = index.to_i
+      
       if proto == "4"
-        m.reply Format(:bold, "[#{interface}]") + " " + $config["ips"][server]["ipv4"][index]
+        proto = "ipv4"
       elsif proto == "6"
-        m.reply Format(:bold, "[#{interface}]") + " " + $config["ips"][server]["ipv6"][index]
+        proto = "ipv6"
+      else
+        m.reply "Invalid interface."
+        return
       end
-    end
+      
+      unless $config["ips"].has_key? server
+        m.reply "Invalid interface."
+        return
+      end
+      
+      if $config["ips"][server][proto][index].nil?
+        m.reply "invalid interface."
+        return
+      end
+      
+      m.reply Format(:bold, "[#{interface}]") + " " + $config["ips"][server][proto][index]
   end
   
   def update(m)

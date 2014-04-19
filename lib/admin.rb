@@ -437,7 +437,7 @@ class AdminPlugin
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #bnc.im" + \
-                     " :Request ##{id} (for #{r.source}) has been approved by #{m.user.nick}.")
+                     " :Request ##{id} (for #{r.source}) has been #{Format(:green, "approved")} by #{m.user.nick}. This request was waiting for #{Time.diff(Time.now, r.ts)[:diff]}.")
       rescue => e
         # pass
       end

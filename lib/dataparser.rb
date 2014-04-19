@@ -138,7 +138,7 @@ module ZNC
       bindhost.downcase!
       @servers.each do |sname, server|
         server.users.each do |uname, user|
-          user.networks.each do |nname, network|
+          user.networks.each do |network|
             if network.bindhost.downcase == bindhost
               result += 1
             end

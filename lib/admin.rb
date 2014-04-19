@@ -107,7 +107,7 @@ class AdminPlugin
   
   def help(m)
     return unless m.channel == "#bnc.im-admin"
-    m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !approve <id> <ip> [network name] [irc server] [irc port]"
+    m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !approve <id> <interface> [network name] [irc server] [irc port]"
     m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
     m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname>"
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
@@ -412,7 +412,7 @@ class AdminPlugin
     m.reply "kicked #{target} in all channels (#{reason})"
   end
   
-  def approve(m, id, ip, adminnetname = nil, addr = nil)
+  def approve(m, id, interface, adminnetname = nil, addr = nil)
     return unless m.channel == "#bnc.im-admin"
     unless RequestDB.requests.has_key?(id.to_i)
       m.reply "Error: request ##{id} not found."
@@ -434,6 +434,32 @@ class AdminPlugin
     if r.rejected?
       m.reply "Error: request ##{id} has been rejected."
       return
+    end
+    
+    if interface =~ /^([a-z]{3}\d{1})\-(4|6)\-(\d+)$/
+      server, proto, index = $1, $2, $3
+      index = index.to_i
+      
+      if proto == "4"
+        proto = "ipv4"
+      elsif proto == "6"
+        proto = "ipv6"
+      else
+        m.reply "Error: Invalid interface."
+        return
+      end
+      
+      unless $config["ips"].has_key? server
+        m.reply "Error: Invalid interface."
+        return
+      end
+      
+      if $config["ips"][server][proto][index].nil?
+        m.reply "Error: Invalid interface."
+        return
+      end
+      
+      ip = $config["ips"][server][proto][index]
     end
     
     server = find_server_by_ip(ip)

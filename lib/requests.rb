@@ -116,7 +116,7 @@ class Request
 
   def initialize(id, source, username, email, server, port, ircnet, ts, status = 0, key = nil)
     @id = id.to_i
-    @ts = Time.new(ts.to_i)
+    @ts = Time.at(ts.to_i)
     @key = key || RequestDB.gen_key(20)
     @source = source
     @username = username

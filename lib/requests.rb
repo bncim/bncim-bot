@@ -214,7 +214,7 @@ class RequestPlugin
       return
     end
     
-    unless $userdb.username_available?(username)
+    unless $userdb.username_available?(username) 
       m.reply "#{Format(:bold, "Error:")} that username has already been used. Please try another, or " + \
               "contact an operator for help."
       return

@@ -120,6 +120,12 @@ module ZNC
         usernames = server.users.keys.map { |x| x.downcase }
         found = true if usernames.include? username
       end
+      RequestDB.requests.each do |key, req|
+        if req.status >= 0 and req.username.downcase == username
+          found = true
+        end
+      end
+      
       if found == true
         return false
       else

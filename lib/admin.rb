@@ -506,10 +506,10 @@ class AdminPlugin
         reply = "#{Format(:bold, "[#{name}:#{$userdb.servers[name].networks_count.to_s.ljust(2)}]")} " + \
                 "#{Format(:bold, "Interfaces:")} " 
         ipv4.each do |ip|
-          reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.ljust(2)}) | "
+          reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.ljust(2)}), "
         end
         ipv6.each do |ip|
-          reply = reply + "#{name}-6-#{ipv6.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.ljust(2)}) | "
+          reply = reply + "#{name}-6-#{ipv6.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.ljust(2)}), "
         end
         m.reply reply[0..-4]
       end

@@ -338,7 +338,6 @@ class AdminPlugin
         while line = sock.gets
           if line =~ /^:\*controlpanel!znc@bnc\.im PRIVMSG bncbot :(.+)$/
             @bot.msg(m.user, "#{Format(:bold, "[#{server}]")} #{$1}")
-            m.reply "Done! Response has been private messaged to you."
           end
         end
       end

@@ -134,11 +134,14 @@ class AdminPlugin
       end
       
       if $config["ips"][server][proto][index].nil?
-        m.reply "invalid interface."
+        m.reply "Invalid interface."
         return
       end
       
       m.reply Format(:bold, "[#{interface}]") + " " + $config["ips"][server][proto][index]
+    else
+      m.reply "Invalid interface."
+    end
   end
   
   def update(m)

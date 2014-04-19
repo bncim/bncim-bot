@@ -206,7 +206,7 @@ class RequestPlugin
     m.reply "I am connected to the following bnc.im servers: #{$config["zncservers"].keys[0..-2].join(", ")} and #{$config["zncservers"].keys[-1]}."
   end
   
-  def request(m, username, email, server, port, reqserver = nil)
+  def request(m, username, email, server, port)
     return if RequestDB.ignored?(m.user.mask)
     if RequestDB.email_used?(email)
       m.reply "#{Format(:bold, "Error:")} That email has already been used. We only permit one account per user. If you " + \
@@ -220,14 +220,6 @@ class RequestPlugin
       return
     end
     
-    unless reqserver.nil?
-      unless $config["zncservers"].keys.include? reqserver.downcase
-        m.reply "#{Format(:bold, "Error:")} #{reqserver} is not a valid bnc.im server. " + \
-                "Please pick from: #{$config["zncservers"].keys.join(", ")}"
-        return
-      end
-    end
-
     $config["blacklist"].each do |entry, reason|
       if server =~ /#{entry}/i
         if reason.nil?
@@ -259,8 +251,6 @@ class RequestPlugin
     r = RequestDB.create(m.user.mask, username, email, server, \
                          port, @bot.irc.network.name, Time.now.to_i)
                          
-    RequestDB.set_requested_server(r.id, reqserver) unless reqserver.nil?
-
     Mail.send_verify(r.email, r.id, r.key)
                                
     m.reply "Your request (##{r.id}) has been submitted. Please check your " + \
@@ -327,12 +317,11 @@ class RequestPlugin
   end
   
   def format_status(r)
-    "%s Source: %s on %s / Username: %s / Email: %s / Date: %s / Server: %s / Port: %s / Requested Server: %s / Confirmed: %s / Approved: %s" %
+    "%s Source: %s on %s / Username: %s / Email: %s / Date: %s / Server: %s / Port: %s / Confirmed: %s / Approved: %s" %
       [Format(:bold, "[##{r.id}]"), Format(:bold, r.source.to_s), 
        Format(:bold, r.ircnet.to_s), Format(:bold, r.username.to_s),
        Format(:bold, r.email.to_s), Format(:bold, Time.at(r.ts).ctime),
        Format(:bold, r.server), Format(:bold, r.port.to_s),
-       Format(:bold, "#{r.reqserver || "N/A"}"), 
        Format(:bold, r.confirmed?.to_s), Format(:bold, r.approved?.to_s)]
   end
   

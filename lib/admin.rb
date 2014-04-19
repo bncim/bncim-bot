@@ -337,7 +337,7 @@ class AdminPlugin
       Timeout::timeout(10) do
         while line = sock.gets
           if line =~ /^:\*controlpanel!znc@bnc\.im PRIVMSG bncbot :(.+)$/
-            @bot.msg(m.user, "#{Format(:bold, "[#{server}]")} #{$1}")
+            m.reply "#{Format(:bold, "[#{server}]")} #{$1}"
           end
         end
       end

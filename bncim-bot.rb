@@ -88,11 +88,13 @@ puts "Initialization complete. Starting bots..."
 # Start the bots
 
 $zncs.each do |key, bot|
-	$threads << Thread.new { bot.start; puts "ZNC bot for #{key} started." }
+  puts "Starting ZNC connection for #{key}.bnc.im..."
+	$threads << Thread.new { bot.start }
 end
 
 $bots.each do |key, bot|
-  $threads << Thread.new { bot.start; puts "IRC bot for #{key} started." }
+  puts "Starting IRC connection for #{key}..."
+  $threads << Thread.new { bot.start }
 end
 
 puts "Bots started!"

@@ -28,7 +28,7 @@ class RelayPlugin
 	def channels(m)
 	  pre_join_strs = Array.new
 	  $bots.keys.each do |network|
-      pre_join_strs << "#{network}/#{$config["servers"][network]["channel"]}"
+      pre_join_strs << "#{network}/#bnc.im"
 	  end
 
 	  reply = "I am in #{$bots.size} networks/channels: #{pre_join_strs.join(", ")}."
@@ -49,7 +49,7 @@ class RelayPlugin
     return if elapsed_time < 60
     netname = @bot.irc.network.name.to_s.downcase
     return if m.channel.nil?
-    return unless m.channel.name.downcase == $config["servers"][netname]["channel"].downcase
+    return unless m.channel.name.downcase == "#bnc.im"
     return unless m.user.nick == @bot.nick
     network = Format(:bold, "[#{colorise(netname)}]")
     send_relay("#{network} *** Relay joined to #{m.channel.name}")
@@ -77,7 +77,7 @@ class RelayPlugin
     end
     netname = @bot.irc.network.name.to_s.downcase
     return if m.channel.nil?
-    return unless m.channel.name.downcase == $config["servers"][netname]["channel"].downcase
+    return unless m.channel.name.downcase == "#bnc.im"
     
     network = Format(:bold, "[#{colorise(netname)}]")
     nick = colorise(m.user.nick)
@@ -98,7 +98,7 @@ class RelayPlugin
     return if ignored_nick?(m.user.nick.to_s)
     return if ignored_nick?(m.user.last_nick.to_s)
     netname = @bot.irc.network.name.to_s.downcase
-    return unless m.user.channels.include? $config["servers"][netname]["channel"]
+    return unless m.user.channels.include? "#bnc.im"
     network = Format(:bold, "[#{colorise(netname)}]")
     message = "#{network} - #{colorise(m.user.last_nick)} is now known as #{colorise(m.user.nick)}"
     send_relay(message)
@@ -110,7 +110,7 @@ class RelayPlugin
     return if ignored_nick?(m.user.nick.to_s)
     netname = @bot.irc.network.name.to_s.downcase
     return if m.channel.nil?
-    return unless m.channel.name.downcase == $config["servers"][netname]["channel"].downcase
+    return unless m.channel.name.downcase == "#bnc.im"
     network = Format(:bold, "[#{colorise(netname)}]")
     if m.message.to_s.downcase == m.channel.name.to_s.downcase
       if $config["bot"]["nohostmasks"]
@@ -145,9 +145,9 @@ class RelayPlugin
     return if $config["bot"]["privmsgonly"]
     netname = @bot.irc.network.name.to_s.downcase
     return if m.channel.nil?
-    return unless m.channel.name.downcase == $config["servers"][netname]["channel"].downcase
+    return unless m.channel.name.downcase == "#bnc.im"
     if m.params[1].downcase == @bot.nick.downcase
-      Channel($config["servers"][netname]["channel"]).join
+      Channel("#bnc.im").join
       return
     end
     network = Format(:bold, "[#{colorise(netname)}]")
@@ -167,7 +167,7 @@ class RelayPlugin
     return if m.user.nick == @bot.nick
     netname = @bot.irc.network.name.to_s.downcase
     return if m.channel.nil?
-    return unless m.channel.name.downcase == $config["servers"][netname]["channel"].downcase
+    return unless m.channel.name.downcase == "#bnc.im"
     network = Format(:bold, "[#{colorise(netname)}]")
     if $config["bot"]["nohostmasks"]
       message = "#{network} - #{colorise(m.user.nick)} has joined #{m.channel.name}"
@@ -184,7 +184,7 @@ class RelayPlugin
     unique_users = []
     
     $bots.each do |network, bot|
-      chan = $config["servers"][network]["channel"]
+      chan = "#bnc.im"
       users = bot.Channel(chan).users
       users_with_modes = Array.new
       
@@ -212,7 +212,7 @@ class RelayPlugin
     $bots.each do |network, bot|
       unless bot.irc.network.name.to_s.downcase == @bot.irc.network.name.to_s.downcase
         begin
-          bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
+          bot.irc.send("PRIVMSG #bnc.im" + \
                        " :#{m}")
         rescue => e
           # pass

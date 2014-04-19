@@ -202,7 +202,7 @@ class RequestPlugin
     
   def servers(m)
     return if m.channel == "#bnc.im-admin"
-    m.reply "I am connected to the following IRC servers: #{$config["servers"].keys[0..-2].join(", ")} and #{$config["servers"].keys[-1]}."
+    m.reply "I am connected to the following IRC servers: #{$config["servers"][0..-2].join(", ")} and #{$config["servers"][-1]}."
     m.reply "I am connected to the following bnc.im servers: #{$config["zncservers"].keys[0..-2].join(", ")} and #{$config["zncservers"].keys[-1]}."
   end
   
@@ -340,7 +340,7 @@ class RequestPlugin
     $bots.each do |network, bot|
       unless bot.irc.network.name.to_s.downcase == @bot.irc.network.name.to_s.downcase
         begin
-          bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
+          bot.irc.send("PRIVMSG #bnc.im" + \
                        " :#{m}")
         rescue => e
           # pass

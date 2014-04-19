@@ -28,7 +28,7 @@ $threads = Array.new
 $start = Time.now.to_i
 
 # Set up a bot for each server
-$config["servers"].each do |name, server|
+$config["servers"].each do |name|
   bot = Cinch::Bot.new do
     configure do |c|
       c.nick = $config["bot"]["nick"]
@@ -40,7 +40,6 @@ $config["servers"].each do |name, server|
       if $config["adminnet"] == name
         c.messages_per_second = 20
         c.plugins.plugins << AdminPlugin
-        c.plugins.plugins << LogPlugin
       end
     end
   end
@@ -48,7 +47,7 @@ $config["servers"].each do |name, server|
   bot.loggers << BNCLogger.new(name, File.open("log/irc-#{name}.log", "a"))
   bot.loggers << BNCLogger.new(name, STDOUT)
   bot.loggers.level = :error
-  if $config["admin"]["network"] == name
+  if $config["adminnet"] == name
     $adminbot = bot
   end
   $bots[name] = bot

@@ -97,20 +97,20 @@ class AdminPlugin
   end
   
   def help(m)
-    if m.channel == "#bnc.im-admin"
-      m.reply "Admin commands:"
-      m.reply "!unconfirmed | !pending | !reqinfo <id> | !requser <username> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask>"
-      m.reply "!addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname> | !approve <id> <ip> [network name] [irc server] [irc port] | !todo | !reports | !clear <reportid> [message] | !offline"
-      m.reply "!find <user regexp> | !findnet <regexp> | !crawl <server> <port> | !netcount <regexp> | !stats | !update "
-    end
+    return unless m.channel == "#bnc.im-admin"
+    m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> [network name] [irc server] [irc port]"
+    m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message]"
+    m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname>"
+    m.reply "#{Format(:bold, "[MANAGEMENT]")} !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic [--append/--prepend] <topic> (does not work on QN)"
+    m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
+    m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port>"
   end
   
   def update(m)
-    if m.channel == "#bnc.im-admin"
-      m.reply "Updating...."
-      $userdb.update
-      m.reply "Updated user data."
-    end
+    return unless m.channel == "#bnc.im-admin"
+    m.reply "Updating...."
+    $userdb.update
+    m.reply "Updated user data."
   end
   
   def crawl(m, server, port)
@@ -253,7 +253,7 @@ class AdminPlugin
     $zncs[server].irc.send(msg_to_control("AddNetwork #{username} #{netname}"))
     $zncs[server].irc.send(msg_to_control("AddServer #{username} #{netname} #{addrstr}"))
     if $config["servers"].include? netname.downcase
-      $zncs[server].irc.send(msg_to_control("AddChan #{username} #{netname} #{$config["servers"][netname]["channel"]}"))
+      $zncs[server].irc.send(msg_to_control("AddChan #{username} #{netname} #bnc.im"))
     end
     m.reply "done."
     $userdb.update
@@ -422,7 +422,7 @@ class AdminPlugin
       end
       $zncs[server].irc.send(msg_to_control("SetNetwork Nick #{r.username} #{netname} #{r.username}"))
       if $config["servers"].include? netname.downcase
-        $zncs[server].irc.send(msg_to_control("AddChan #{r.username} #{netname} #{$config["servers"][netname.downcase]["channel"]}"))
+        $zncs[server].irc.send(msg_to_control("AddChan #{r.username} #{netname} #bnc.im"))
       end
     end
     
@@ -436,7 +436,7 @@ class AdminPlugin
     adminmsg("Do not forget to update the spreadsheet: http://bit.ly/1lFDgj5")
     $bots.each do |network, bot|
       begin
-        bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
+        bot.irc.send("PRIVMSG #bnc.im" + \
                      " :Request ##{id} (for #{r.source}) has been approved by #{m.user.nick}.")
       rescue => e
         # pass
@@ -466,7 +466,7 @@ class AdminPlugin
     
     $bots.each do |network, bot|
       begin
-        bot.irc.send("PRIVMSG #{$config["servers"][network]["channel"]}" + \
+        bot.irc.send("PRIVMSG #bnc.im" + \
                      " :Request ##{id} (for #{r.source}) has been rejected by #{m.user.nick}. Reason: #{reason}.")
       rescue => e
         # pass

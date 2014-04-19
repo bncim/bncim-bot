@@ -252,7 +252,7 @@ class AdminPlugin
     end
     $zncs[server].irc.send(msg_to_control("AddNetwork #{username} #{netname}"))
     $zncs[server].irc.send(msg_to_control("AddServer #{username} #{netname} #{addrstr}"))
-    if $config["servers"].has_key? netname
+    if $config["servers"].include? netname.downcase
       $zncs[server].irc.send(msg_to_control("AddChan #{username} #{netname} #{$config["servers"][netname]["channel"]}"))
     end
     m.reply "done."
@@ -421,7 +421,7 @@ class AdminPlugin
         $zncs[server].irc.send(msg_to_control("AddServer #{r.username} #{netname} #{addr}"))
       end
       $zncs[server].irc.send(msg_to_control("SetNetwork Nick #{r.username} #{netname} #{r.username}"))
-      if $config["servers"].has_key? netname.downcase
+      if $config["servers"].include? netname.downcase
         $zncs[server].irc.send(msg_to_control("AddChan #{r.username} #{netname} #{$config["servers"][netname.downcase]["channel"]}"))
       end
     end

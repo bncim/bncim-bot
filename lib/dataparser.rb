@@ -145,6 +145,7 @@ module ZNC
           end
         end
       end
+      return result
     end
     
     def find_user(search, specserver = nil)

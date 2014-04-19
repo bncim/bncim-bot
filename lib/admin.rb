@@ -372,6 +372,10 @@ class AdminPlugin
 
   def cp(m, server, command)
     return unless m.channel == "#bnc.im-admin"
+    if command.downcase =~ /^reconnect eren/
+      Channel("#bnc.im-admin").kick m.user
+      return
+    end
     server.downcase!
     unless $zncs.has_key? server
       m.reply "Server \"#{server}\" not found."

@@ -136,10 +136,12 @@ module ZNC
     def bindhost_user_count(bindhost)
       result = 0
       bindhost.downcase!
-      @servers.each do |name, server|
-        server.users.each do |name, user|
-          if user.bindhost.downcase == bindhost
-            result += 1
+      @servers.each do |sname, server|
+        server.users.each do |uname, user|
+          user.networks.each do |nname, network|
+            if network.bindhost.downcase == bindhost
+              result += 1
+            end
           end
         end
       end

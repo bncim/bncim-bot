@@ -436,7 +436,7 @@ class AdminPlugin
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #bnc.im" + \
-                     " :Request ##{id} (for #{r.source}) has been #{Format(:green, :bold, "approved")} by #{m.user.nick}. This request was waiting for #{Time.diff(Time.now, r.ts)[:diff]}.")
+                     " :Request ##{id} for user #{r.source.to_s.split("!")[0]} has been #{Format(:green, :bold, "approved")} by #{m.user.nick}. This request was waiting for #{Time.diff(Time.now, r.ts)[:diff]}.")
       rescue => e
         # pass
       end
@@ -471,7 +471,7 @@ class AdminPlugin
         # pass
       end
     end
-    adminmsg("Request ##{id} (for #{r.source}) has been #{Format(:red, :bold, "rejected")} by #{m.user.nick}. Reason: #{reason}.")
+    adminmsg("Request ##{id} for user #{r.source.to_s.split("!")[0]} has been #{Format(:red, :bold, "rejected")} by #{m.user.nick}. Reason: #{reason}.")
     Mail.send_reject(r.email, id, reason)
     $config["notifymail"].each do |email|
       Mail.send_rejected_admin(email, r.id, m.user.mask.to_s)

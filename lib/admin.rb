@@ -430,13 +430,13 @@ class AdminPlugin
     $config["notifymail"].each do |email|
       Mail.send_approved_admin(email, r.id, m.user.mask.to_s)
     end
-    adminmsg("Request ##{id} for user #{r.source.to_s.split("!")[0]} for network #{netname} approved to #{server} " + \
+    adminmsg("Request ##{id} for user #{r.source.to_s.split("!")[0]} for network #{netname} #{Format(:green, :bold, "approved")} to #{server} " + \
              "(#{ip}) by #{m.user}. Password: #{password}")
     adminmsg("Do not forget to update the spreadsheet: http://bit.ly/1lFDgj5")
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #bnc.im" + \
-                     " :Request ##{id} (for #{r.source}) has been #{Format(:green, "approved")} by #{m.user.nick}. This request was waiting for #{Time.diff(Time.now, r.ts)[:diff]}.")
+                     " :Request ##{id} (for #{r.source}) has been #{Format(:green, :bold, "approved")} by #{m.user.nick}. This request was waiting for #{Time.diff(Time.now, r.ts)[:diff]}.")
       rescue => e
         # pass
       end
@@ -466,12 +466,12 @@ class AdminPlugin
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #bnc.im" + \
-                     " :Request ##{id} (for #{r.source}) has been rejected by #{m.user.nick}. Reason: #{reason}.")
+                     " :Request ##{id} (for #{r.source}) has been #{Format(:red, :bold, "rejected")} by #{m.user.nick}. Reason: #{reason}.")
       rescue => e
         # pass
       end
     end
-    adminmsg("Request ##{id} (for #{r.source}) has been rejected by #{m.user.nick}. Reason: #{reason}.")
+    adminmsg("Request ##{id} (for #{r.source}) has been #{Format(:red, :bold, "rejected")} by #{m.user.nick}. Reason: #{reason}.")
     Mail.send_reject(r.email, id, reason)
     $config["notifymail"].each do |email|
       Mail.send_rejected_admin(email, r.id, m.user.mask.to_s)

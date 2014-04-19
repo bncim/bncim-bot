@@ -183,6 +183,18 @@ class AdminPlugin
     m.reply "#{total} connections found for /#{str}/. #{offline} are offline."
   end
   
+  def get_interface_name(ip)
+    ips = $config["ips"]
+    ips.each do |name, addrs|
+      ipv4, ipv6 = addrs["ipv4"], addrs["ipv6"]
+      if ipv4.include? ip
+        return "#{name}-4-#{ipv4.index(ip)}"
+      elsif ipv6.include? ip
+        return "#{name}-6-#{ipv6.index(ip)}"
+      end
+    end
+  end
+  
   def offline(m)
     return unless m.channel == "#bnc.im-admin"
     results = []
@@ -201,7 +213,7 @@ class AdminPlugin
     end 
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost")
     results.each do |user, network|
-      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost.to_s
+      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + get_interface_name(network.bindhost)
     end
     m.reply Format(:bold, " End of list.")
   end
@@ -236,9 +248,9 @@ class AdminPlugin
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost")
     results.each do |user, network|
       if network.online
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost.to_s
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + get_interface_name(network.bindhost)
       else
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost.to_s
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + get_interface_name(network.bindhost)
       end
     end
     m.reply Format(:bold, " End of list.")
@@ -261,9 +273,9 @@ class AdminPlugin
       m.reply " " + user.server.ljust(8) + user.username
       user.networks.each do |network|
         if network.online
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + network.bindhost.to_s
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + get_interface_name(network.bindhost)
         else
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + network.bindhost.to_s
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + get_interface_name(network.bindhost)
         end
       end
     end

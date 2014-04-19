@@ -133,6 +133,18 @@ module ZNC
       end
     end
     
+    def bindhost_user_count(bindhost)
+      result = 0
+      bindhost.downcase!
+      @servers.each do |name, server|
+        server.users.each do |name, user|
+          if user.bindhost.downcase == bindhost
+            result += 1
+          end
+        end
+      end
+    end
+    
     def find_user(search, specserver = nil)
       results = []
       @servers.each do |name, server|

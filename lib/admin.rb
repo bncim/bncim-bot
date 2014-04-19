@@ -503,13 +503,13 @@ class AdminPlugin
       ips.each do |name, addrs|
         ipv4 = addrs["ipv4"]
         ipv6 = addrs["ipv6"]
-        reply = "#{Format(:bold, "[#{name}:#{$userdb.servers[name].networks_count.to_s.ljust(2, '0')}]")} " + \
+        reply = "#{Format(:bold, "[#{name}:#{$userdb.servers[name].networks_count.to_s.rjust(2, '0')}]")} " + \
                 "#{Format(:bold, "Interfaces:")} " 
         ipv4.each do |ip|
-          reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.ljust(2, '0')}), "
+          reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.rjust(2, '0')}), "
         end
         ipv6.each do |ip|
-          reply = reply + "#{name}-6-#{ipv6.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.ljust(2, '0')}), "
+          reply = reply + "#{name}-6-#{ipv6.index(ip)} (#{$userdb.bindhost_user_count(ip).to_s.rjust(2, '0')}), "
         end
         m.reply reply[0..-3]
       end

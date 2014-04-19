@@ -431,7 +431,7 @@ class AdminPlugin
     $config["notifymail"].each do |email|
       Mail.send_approved_admin(email, r.id, m.user.mask.to_s)
     end
-    adminmsg("Request ##{id} for user #{r.source.split("!")[0]} for network #{netname} approved to #{server} " + \
+    adminmsg("Request ##{id} for user #{r.source.to_s.split("!")[0]} for network #{netname} approved to #{server} " + \
              "(#{ip}) by #{m.user}. Password: #{password}")
     adminmsg("Do not forget to update the spreadsheet: http://bit.ly/1lFDgj5")
     $bots.each do |network, bot|

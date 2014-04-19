@@ -1,58 +1,18 @@
 require 'socket'
 require 'openssl'
 
-class AdminMsg
-  def self.do(msg)
-    begin
-      $adminbot.irc.send("PRIVMSG #bnc.im-admin :#{msg}")
-    rescue => e
-      #
-    end
-  end
-end
-
-class LogPlugin
-  include Cinch::Plugin
-  
-  listen_to :message, method: :check_log
-  
-  def check_log(m)
-    return unless m.channel == "#bnc.im-log"
-    if m.user.nick =~ /^bncim\-(\w{3}\d)$/
-      server = $1
-      if m.message =~ /^\[(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2})\] (.+)$/
-        timestamp = $1
-        if $2 =~ /^\[(\S+)\] disconnected from ZNC from (\S+)$/
-          $userdb.servers[server].users[$1].last_seen = Time.now.to_i
-        elsif $2 =~ /^\[(\S+)\] connected to ZNC from (\S+)$/
-          $userdb.servers[server].users[$1].last_seen = Time.now.to_i
-        end
-      end
-    end
-  end
-end
-
 module ZNC
   class User 
     attr_reader :username, :server
-    attr_accessor :networks, :last_seen
+    attr_accessor :networks
   
     def initialize(username, server)
       @username, @server = username, server
       @networks = Array.new
-      @last_seen = nil
     end
     
     def to_s
       @username
-    end
-    
-    def last_seen_str
-      if @last_seen == nil
-        return "unknown, check webadmin"
-      else
-        return Time.at(@last_seen).ctime
-      end
     end
   end
   

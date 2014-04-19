@@ -92,9 +92,9 @@ class AdminPlugin
   def help(m)
     if m.channel == "#bnc.im-admin"
       m.reply "Admin commands:"
-      m.reply "!unconfirmed | !pending | !reqinfo <id> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask>"
+      m.reply "!unconfirmed | !pending | !reqinfo <id> | !requser <username> | !delete <id> | !fverify <id> | !servers | !approve <id> <ip> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask>"
       m.reply "!addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname> | !approve <id> <ip> [network name] [irc server] [irc port] | !todo | !reports | !clear <reportid> [message] | !offline"
-      m.reply "!find <user regexp> | !findnet <regexp> | !crawl <server> <port> | !netcount <regexp> | !stats | !update"
+      m.reply "!find <user regexp> | !findnet <regexp> | !crawl <server> <port> | !netcount <regexp> | !stats | !update "
     end
   end
   
@@ -249,6 +249,7 @@ class AdminPlugin
       $zncs[server].irc.send(msg_to_control("AddChan #{username} #{netname} #{$config["servers"][netname]["channel"]}"))
     end
     m.reply "done."
+    $userdb.update
   end
   
   def delnetwork(m, server, username, netname)
@@ -261,6 +262,7 @@ class AdminPlugin
     end
     $zncs[server].irc.send(msg_to_control("DelNetwork #{username} #{netname}"))
     m.reply "done!"
+    $userdb.update
   end
 
   def topic(m, topic)
@@ -328,7 +330,8 @@ class AdminPlugin
       Timeout::timeout(10) do
         while line = sock.gets
           if line =~ /^:\*controlpanel!znc@bnc\.im PRIVMSG bncbot :(.+)$/
-            m.reply "#{Format(:bold, "[#{server}]")} #{$1}"
+            @bot.msg(m.user, "#{Format(:bold, "[#{server}]")} #{$1}")
+            m.reply "Done! Response has been private messaged to you."
           end
         end
       end
@@ -369,6 +372,11 @@ class AdminPlugin
     
     if r.approved?
       m.reply "Error: request ##{id} is already approved."
+      return
+    end
+    
+    if r.rejected?
+      m.reply "Error: request ##{id} has been rejected."
       return
     end
     
@@ -416,7 +424,8 @@ class AdminPlugin
     $config["notifymail"].each do |email|
       Mail.send_approved_admin(email, r.id, m.user.mask.to_s)
     end
-    adminmsg("Request ##{id} for #{netname} approved to #{server} (#{ip}) by #{m.user}. Password: #{password}")
+    adminmsg("Request ##{id} for user #{r.source.split("!")[0]} for network #{netname} approved to #{server} " + \
+             "(#{ip}) by #{m.user}. Password: #{password}")
     adminmsg("Do not forget to update the spreadsheet: http://bit.ly/1lFDgj5")
     $bots.each do |network, bot|
       begin
@@ -461,7 +470,7 @@ class AdminPlugin
     $config["notifymail"].each do |email|
       Mail.send_rejected_admin(email, r.id, m.user.mask.to_s)
     end
-    RequestDB.delete_id(r.id)
+    RequestDB.reject(r.id)
   end
   
   def msg_to_control(msg)
@@ -554,16 +563,6 @@ class AdminPlugin
     m.reply "Deleted request ##{id}."
   end
 
-  def allmsg(m)
-    $bots.each do |network, bot|
-      begin
-        bot.irc.send("PRIVMSG #bnc.im :#{m}")
-      rescue => e
-        # pass
-      end
-    end
-  end
-  
   def pending(m)
     return unless m.channel == "#bnc.im-admin"
     

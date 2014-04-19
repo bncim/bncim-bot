@@ -22,15 +22,9 @@ class RequestDB
     end
     
     CSV.foreach(file) do |row|
-      request = Request.new(row[0].to_i, row[3], row[7], row[4], \
-                           row[5], row[6], row[1].to_i)
-      request.key = row[2]
-      request.approved = true if row[8] == "true"
-      request.approved = false if row[8] == "false"
-      request.confirmed = true if row[9] == "true"
-      request.confirmed = false if row[9] == "false"
-      request.ircnet = row[10]
-      request.reqserver = row[11]
+      request = Request.new(row[0], row[3], row[7], row[4], \
+                           row[5], row[6], row[9], row[1], \
+                           row[8], row[2])
       @@requests[request.id] = request
     end
   end
@@ -40,8 +34,7 @@ class RequestDB
     csv_string = CSV.generate do |csv|
       @@requests.each_value do |r|
         csv << [r.id, r.ts, r.key, r.source, r.email, r.server, \
-          r.port, r.username, r.approved?, r.confirmed?, r.ircnet,\
-          r.reqserver]
+          r.port, r.username, r.status, r.ircnet]
       end
     end
     file.write csv_string
@@ -55,7 +48,11 @@ class RequestDB
   def self.email_used?(email)
     @@requests.each_value do |request|
       if request.email.downcase == email.downcase
-        return true
+        if request.status >= 0
+          return true
+        else
+          next
+        end
       else
         next
       end
@@ -90,21 +87,21 @@ class RequestDB
     ([nil]*length).map { ((48..57).to_a+(65..90).to_a+(97..122).to_a).sample.chr }.join
   end
 
-  def self.confirm(id, confirmed = true)
-    @@requests[id].confirmed = confirmed
+  def self.confirm(id)
+    @@requests[id].status = 1
     RequestDB.save($config["requestdb"])
   end
 
-  def self.approve(id, approved = true)
-    @@requests[id].approved = approved
+  def self.approve(id)
+    @@requests[id].status = 2
     RequestDB.save($config["requestdb"])
   end
   
-  def self.set_requested_server(id, value)
-    @@requests[id].reqserver = value
+  def self.reject(id, rejected = true)
+    @@requests[id].status = -1
     RequestDB.save($config["requestdb"])
   end
-
+  
   def self.delete_id(id)
     @@requests.delete id
     RequestDB.save($config["requestdb"])
@@ -113,31 +110,36 @@ end
 
 class Request
   attr_reader :id, :username
-  attr_accessor :key, :ts, :approved, :confirmed
+  attr_accessor :key, :ts, :status
   attr_accessor :source, :email, :server, :port
-  attr_accessor :ircnet, :reqserver
+  attr_accessor :ircnet
 
-  def initialize(id, source, username, email, server, port, ircnet, ts = nil)
-    @id = id
-    @ts = ts || Time.now.to_i
-    @key = RequestDB.gen_key(20)
-    @approved = false
-    @confirmed = false
+  def initialize(id, source, username, email, server, port, ircnet, ts, status = 0, key = nil)
+    @id = id.to_i
+    @ts = Time.new(ts.to_i)
+    @key = key || RequestDB.gen_key(20)
     @source = source
     @username = username
     @ircnet = ircnet
     @email = email
     @server = server
     @port = port
-    @reqserver = nil
+    @status = status
   end
 
   def approved?
-    @approved
+    return true if @status == 2
+    return false
   end
 
   def confirmed?
-    @confirmed
+    return true if @status >= 1
+    return false
+  end
+  
+  def rejected?
+    return true if @status == -1
+    return false
   end
 end
 
@@ -145,23 +147,16 @@ class RequestPlugin
   include Cinch::Plugin
   match /request\s+(\w+)\s+(\S+)\s+(\S+)\s+(\+?\d+)$/i, method: :request, group: :request
   match /request\s+(\w+)\s+(\S+)\s+(\S+)\s+(\+?\d+)\s+(\w+)$/i, method: :request, group: :request
-  match /request\s+(.+)$/i, method: :detailed_help, group: :request
+  match /request/i, method: :help, group: :request
   match /request/i, method: :help, group: :request
   match /networks/i, method: :servers
   match /web/i, method: :web
   match /verify\s+(\d+)\s+(\S+)/i, method: :verify
   match /servers/i, method: :servers
-	match "stats", method: :stats
-	match "pricks", method: :pricks
+  match "stats", method: :stats
   match /uptime\s+(\w+)\s*/i, method: :uptime
-  
   match "help", method: :help
 
-	def pricks(m)
-		m.reply "#{Format(:bold, "[Pricks]")} Robby"
-		return unless m.channel == "#bnc.im"
-		relay_cmd_reply "#{Format(:bold, "[Pricks]")} Robby"
-	end
 
 	def stats(m)
     return unless m.channel == "#bnc.im"
@@ -204,26 +199,7 @@ class RequestPlugin
     relay_reply = "#{network} <@#{@bot.nick}> #{text}"
     send_relay(relay_reply)
   end
-  
-  def detailed_help(m, args)
-    split = args.split(" ")
-    if split.size >= 4
-      unless split[0] =~ /^\w+$/
-        m.reply "#{Format(:bold, "Error:")} Please only use alphanumeric characters in your username."
-      end
-      unless split[1] =~ /@/
-        m.reply "#{Format(:bold, "Error:")} The email you have provided is not valid."
-      end
-      unless split[3] =~ /^\+?\d+$/
-        m.reply "#{Format(:bold, "Error:")} Please only use numbers in the port. If you want to use SSL, append + before an SSL port, for example: +6697."
-      end
-    elsif split.size == 3
-      m.reply "#{Format(:bold, "Error:")} Please add a port to your request. If you are unsure, use 6667."
-    else
-      help(m)
-    end
-  end
-  
+    
   def servers(m)
     return if m.channel == "#bnc.im-admin"
     m.reply "I am connected to the following IRC servers: #{$config["servers"].keys[0..-2].join(", ")} and #{$config["servers"].keys[-1]}."
@@ -279,10 +255,9 @@ class RequestPlugin
       m.reply "#{Format(:bold, "Error:")} Port #{port} is invalid. If you want to use SSL, put a + infront of the port."
       return
     end
-    
-    
-    r = RequestDB.create(m.user.mask, username, email, server,\
-                         port, @bot.irc.network.name)
+
+    r = RequestDB.create(m.user.mask, username, email, server, \
+                         port, @bot.irc.network.name, Time.now.to_i)
                          
     RequestDB.set_requested_server(r.id, reqserver) unless reqserver.nil?
 
@@ -384,5 +359,4 @@ class RequestPlugin
     index = floathash % 10
     return "#{colours[index]}#{text}\3"
   end
-    
 end

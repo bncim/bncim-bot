@@ -83,7 +83,7 @@ end
 
 $userdb = ZNC::UserDB.new(servers)
 
-puts "Initialization complete. Starting bots..."
+puts "Initialization complete. Connecting to IRC and ZNC..."
 
 # Start the bots
 
@@ -97,7 +97,7 @@ $bots.each do |key, bot|
   $threads << Thread.new { bot.start }
 end
 
-puts "Bots started!"
+puts "Connected!"
 
 sleep 5
 

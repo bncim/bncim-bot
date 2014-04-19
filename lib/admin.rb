@@ -219,7 +219,7 @@ class AdminPlugin
       m.reply "No results."
       return
     end 
-    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost")
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Interface")
     results.each do |user, network|
       m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + get_interface_name(network.bindhost)
     end
@@ -253,7 +253,7 @@ class AdminPlugin
       return
     end
     
-    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost")
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Interface")
     results.each do |user, network|
       if network.online
         m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + get_interface_name(network.bindhost)
@@ -276,7 +276,7 @@ class AdminPlugin
       return
     end
     
-    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    BindHost")
+    m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Interface")
     results.each do |user|
       m.reply " " + user.server.ljust(8) + user.username
       user.networks.each do |network|

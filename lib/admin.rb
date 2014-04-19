@@ -466,7 +466,7 @@ class AdminPlugin
     $bots.each do |network, bot|
       begin
         bot.irc.send("PRIVMSG #bnc.im" + \
-                     " :Request ##{id} (for #{r.source}) has been #{Format(:red, :bold, "rejected")} by #{m.user.nick}. Reason: #{reason}.")
+                     " :Request ##{id} for user #{r.source.to_s.split("!")[0]} has been #{Format(:red, :bold, "rejected")} by #{m.user.nick}. Reason: #{reason}.")
       rescue => e
         # pass
       end

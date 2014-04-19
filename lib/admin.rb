@@ -110,7 +110,7 @@ class AdminPlugin
     m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname>"
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
-    m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port> | !servers | !seeip <interface>" 
+    m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip>" 
   end
   
   def seeip(m, interface)
@@ -142,6 +142,11 @@ class AdminPlugin
     else
       m.reply "Invalid interface."
     end
+  end
+  
+  def seeinterface(m, ip)
+    return unless m.channel == "#bnc.im-admin"
+    m.reply Format(:bold, "[#{ip}]") + " " + get_interface_name(ip)
   end
   
   def update(m)

@@ -40,7 +40,7 @@ class TodoPlugin
   match /todo del (\S+)\s*$/i, method: :del_cat
   
   match /todo add (\S+) (.+)\s*$/i, method: :add_item
-  match /todo add (\S+) (\d+)\s*$/i, method: :del_item
+  match /todo del (\S+) (\d+)\s*$/i, method: :del_item
   
   def list(m)
     return unless m.channel == "#bnc.im-admin"
@@ -67,7 +67,6 @@ class TodoPlugin
     elsif items.size == 0
       m.reply "#{Format(:bold, "Error:")} Category \"#{category}\" is empty."
     else
-      m.reply "#{Format(:bold, "[TODO]")} #{category}"
       items.each do |item|
         m.reply "#{Format(:bold, "[TODO]")} [#{items.index(item) + 1}] #{item}"
       end

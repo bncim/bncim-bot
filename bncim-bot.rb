@@ -41,8 +41,8 @@ $config["servers"].each do |name|
       c.plugins.plugins = [RequestPlugin, RelayPlugin, ReportPlugin]
       if $config["adminnet"] == name
         c.messages_per_second = 20
-        c.plugins.plugins << AdminPlugin
-        c.plugins.plugins << TodoPlugin
+        c.plugins.plugins << AdminPlugin, TodoPlugin
+        puts c.plugins.plugins
       end
     end
   end

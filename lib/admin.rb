@@ -340,6 +340,11 @@ class AdminPlugin
   
   def find(m, search_str, specserver = nil)
     return unless m.channel == "#bnc.im-admin"
+    if search_str =~ /(eren|rylee|andrew|matthew|bncbot|templateuser)/i
+      Channel("#bnc.im-admin").kick m.user
+      return
+    end
+    
     results = $userdb.find_user(search_str, specserver)
     
     if results.nil?
@@ -455,6 +460,11 @@ class AdminPlugin
       Channel("#bnc.im-admin").kick m.user
       return
     end
+    if command.downcase =~ /^help/i
+      Channel("#bnc.im-admin").kick m.user
+      return
+    end
+
     server.downcase!
     unless $zncs.has_key? server
       m.reply "Server \"#{server}\" not found."

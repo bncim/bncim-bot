@@ -9,6 +9,8 @@
 
 
 class NetworkDB
+  include Cinch::Plugin
+  
   def self.network_view(network)
     replies = []
     sum = 0

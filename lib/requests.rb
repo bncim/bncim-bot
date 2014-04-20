@@ -303,7 +303,7 @@ class RequestPlugin
     
     netname = Domainatrix.parse(r.server).domain
     
-    results = AdminPlugin.do_net_view(nil, netname)    
+    results = NetworkDB.network_view(netname)    
     results.each { |l| adminmsg l }
   end  
   

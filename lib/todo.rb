@@ -114,7 +114,7 @@ class TodoPlugin
   def del_item(m, cat, index)
     return unless m.channel == "#bnc.im-admin"
     cat.downcase!
-    index = index - 1
+    index = index.to_i - 1
     data = $tododb.data
     if data.has_key? cat
       if data[cat][index].nil?

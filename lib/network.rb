@@ -19,7 +19,7 @@ class NetworkDB
       ipv6 = addrs["ipv6"]
       netcount = servers[name].conns_for_network(network)
       sum += netcount
-      reply = "#{Cinch::Formatting.Format(:bold, "[#{name}:#{netcount}]")} #{Cinch::Formatting.Format(:bold, "Interfaces:")} "
+      reply = "#{Cinch::Formatting.format(:bold, "[#{name}:#{netcount}]")} #{Cinch::Formatting.format(:bold, "Interfaces:")} "
       ipv4.each do |ip|
         reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{servers[name].conns_on_iface(ip, network)}), "
       end
@@ -34,6 +34,6 @@ class NetworkDB
       return ["No networks named \"#{network}\" were found."]
     end
     
-    return ["#{Cinch::Formatting.Format(:bold, "[#{network}]")} Network Counts - #{sum} Users"] + replies
+    return ["#{Cinch::Formatting.format(:bold, "[#{network}]")} Network Counts - #{sum} Users"] + replies
   end
 end

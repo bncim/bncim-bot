@@ -38,17 +38,18 @@ $config["servers"].each do |name|
       c.port = $config["bot"]["zncport"]
       c.password = "bncbot/#{name}:#{$config["bot"]["zncpass"]}"
       c.ssl.use = true
-      c.plugins.plugins = [RequestPlugin, RelayPlugin, ReportPlugin, TodoPlugin]
+      c.plugins.plugins = [RequestPlugin, RelayPlugin, ReportPlugin]
       if $config["adminnet"] == name
         c.messages_per_second = 20
         c.plugins.plugins << AdminPlugin
+        c.plugins.plugins << TodoPlugin
       end
     end
   end
   bot.loggers.clear
   bot.loggers << BNCLogger.new(name, File.open("log/irc-#{name}.log", "a"))
   bot.loggers << BNCLogger.new(name, STDOUT)
-  bot.loggers.level = :error
+  bot.loggers.level = :info
   if $config["adminnet"] == name
     $adminbot = bot
   end

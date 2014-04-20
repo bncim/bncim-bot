@@ -104,7 +104,7 @@ class AdminPlugin
   match /block (\S+) (\S+)/, method: :block
   match /unblock (\S+) (\S+)/, method: :unblock
   match /net (\S+)/i, method: :network_view
-  match /^\-(\S+)$/i, method: :network_view
+  match /^\-(\S+)$/i, method: :network_view, use_prefix: false
   
   match "help", method: :help
     

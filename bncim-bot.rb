@@ -85,7 +85,7 @@ $config["zncservers"].each do |name, server|
 end
 
 $userdb = ZNC::UserDB.new(servers)
-$notedb = TodoDB.new($config["tododb"])
+$notedb = NoteDB.new($config["notedb"])
 
 puts "Initialization complete. Connecting to IRC and ZNC..."
 

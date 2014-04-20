@@ -245,7 +245,6 @@ module ZNC
           
           c = 0
           while line = sock.gets
-            puts line
             if line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :\| (\S+)\s+\|\s*$/
               c += 1
               username = $1
@@ -253,6 +252,8 @@ module ZNC
               if users.has_key? username
                 users[username].blocked = true
               end
+            elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot/
+              c += 1
             elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :\+\-+\+\s*/
               break if c > 3
             end

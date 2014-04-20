@@ -123,7 +123,7 @@ class Request
     @ircnet = ircnet
     @email = email
     @server = server
-    @port = port.to_i
+    @port = port
     @status = status.to_i
   end
 

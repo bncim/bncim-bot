@@ -175,7 +175,7 @@ class AdminPlugin
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !net <network> | !cp <server> <command> | !sbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
     m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
-    m.reply "#{Format(:bold, "[TODO]")} !todo | !todo list <category> | !todo add <category> <item> | !todo del <category> | !todo del <category> <num>" 
+    m.reply "#{Format(:bold, "[NOTES]")} !note | !note list <category> | !note add <category> <item> | !note del <category> | !note del <category> <num>" 
     
   end 
   

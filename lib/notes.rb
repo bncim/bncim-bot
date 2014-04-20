@@ -122,6 +122,7 @@ class NotePlugin
         m.reply "#{Format(:bold, "Error:")} Item ##{index + 1} not found."
       else
         data[cat].delete data[cat][index]
+        $notedb.data = data
         m.reply "Deleted item ##{index + 1}."
       end
     else

@@ -83,7 +83,7 @@ class AdminPlugin
   match /fverify\s+(\d+)/, method: :fverify
   match "servers", method: :servers
   match /broadcast (.+)/, method: :broadcast
-  match /serverbroadcast (\w+) (.+)/, method: :serverbroadcast
+  match /sbroadcast (\w+) (.+)/, method: :serverbroadcast
   match /cp (\w+) (.+)/, method: :cp
   match /addnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s+(.+)\s*$/, method: :addnetwork
   match /delnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnetwork
@@ -97,14 +97,14 @@ class AdminPlugin
   match /crawl (\S+) (\+?\d+)/, method: :crawl
   match "update", method: :update
   match "data", method: :data
-  match "spreadsheet", method: :spreadsheet
   match /seeip (\S+)/i, method: :seeip
   match /seeinterface (\S+)/i, method: :seeinterface
   match /genpass (\d+)/i, method: :genpass
   match "blocked", method: :blocked
   match /block (\S+) (\S+)/, method: :block
   match /unblock (\S+) (\S+)/, method: :unblock
-  match /network (\S+)/i, method: :network_view
+  match /net (\S+)/i, method: :network_view
+  match /^\-(\S+)$/i, method: :network_view
   
   match "help", method: :help
     
@@ -150,12 +150,7 @@ class AdminPlugin
     return unless m.channel == "#bnc.im-admin"
     m.reply RequestDB.gen_key(len.to_i)
   end
-  
-  def spreadsheet(m)
-    return unless m.channel == "#bnc.im-admin"
-    m.reply "http://bit.ly/1lFDgj5"
-  end
-  
+    
   def data(m)
     return unless m.channel == "#bnc.im-admin"
     m.reply "The current set of user data was updated at: #{Format(:bold, $userdb.updated.ctime)} (#{Time.diff($userdb.updated, Time.now)[:diff]} ago)"
@@ -176,8 +171,8 @@ class AdminPlugin
     return unless m.channel == "#bnc.im-admin"
     m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !approve <id> <interface> [network name] [irc server] [irc port]"
     m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
-    m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname> | !blocked | ![un]block <server> <user>"
-    m.reply "#{Format(:bold, "[MANAGEMENT]")} !network <network> | !cp <server> <command> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
+    m.reply "#{Format(:bold, "[USERS]")} !addnet <server> <username> <netname> <addr> <port> | !delnet <server> <username> <netname> | !blocked | ![un]block <server> <user>"
+    m.reply "#{Format(:bold, "[MANAGEMENT]")} !net <network> | !cp <server> <command> | !sbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
     m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
     m.reply "#{Format(:bold, "[TODO]")} !todo | !todo list <category> | !todo add <category> <item> | !todo del <category> | !todo del <category> <num>" 

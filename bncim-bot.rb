@@ -20,6 +20,7 @@ require 'lib/relay'
 require 'lib/logger'
 require 'lib/mail'
 require 'lib/dataparser'
+require 'lib/network'
 
 $config = YAML.load_file("config/config.yaml")
 $bots = Hash.new

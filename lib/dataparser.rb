@@ -256,7 +256,7 @@ module ZNC
             elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :/
               c += 1
               break if c > 3
-            elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :No users blocked\s*$/
+            elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :No users blocked/
               puts "none"
               break
             end

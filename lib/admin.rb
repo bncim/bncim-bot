@@ -93,8 +93,48 @@ class AdminPlugin
   match /seeinterface (\S+)/i, method: :seeinterface
   match /genpass (\d+)/i, method: :genpass
   match "blocked", method: :blocked
+  match /block (\S+) (\S+)/, method: :block
+  match /unblock (\S+) (\S+)/, method: :unblock
   
   match "help", method: :help
+  
+  def block(m, server, user)
+    return unless m.channel == "#bnc.im-admin"
+    
+    server.downcase!
+    if $userdb.servers.has_key? server
+      if $userdb.servers[server].users.has_key? user
+        if $userdb.servers[server].users[user].blocked?
+          m.reply "#{Format(:bold, "Error:")} User #{user} is already blocked."
+        else
+          do_block(server, user)
+        end
+      else
+        m.reply "#{Format(:bold, "Error:")} User #{user} not found on #{server}."
+      end
+    else
+      m.reply "#{Format(:bold, "Error:")} server #{server} not found."
+    end
+  end
+  
+  def unblock(m, server, user)
+    return unless m.channel == "#bnc.im-admin"
+    
+    server.downcase!
+    if $userdb.servers.has_key? server
+      if $userdb.servers[server].users.has_key? user
+        if $userdb.servers[server].users[user].blocked?
+          do_block(server, user, true)
+        else
+          m.reply "#{Format(:bold, "Error:")} User #{user} is not blocked."
+        end
+      else
+        m.reply "#{Format(:bold, "Error:")} User #{user} not found on #{server}."
+      end
+    else
+      m.reply "#{Format(:bold, "Error:")} server #{server} not found."
+    end
+  end
   
   def genpass(m, len)
     return unless m.channel == "#bnc.im-admin"
@@ -771,5 +811,32 @@ class AdminPlugin
   
   def adminmsg(text)
     $adminbot.irc.send("PRIVMSG #bnc.im-admin :#{text}")
+  end
+  
+  def do_block(server, user, unblock = false)
+    sock = TCPSocket.new($config["zncservers"][server]["addr"], $config["zncservers"][server]["port"].to_i)
+    ssl_context = OpenSSL::SSL::SSLContext.new
+    ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    sock = OpenSSL::SSL::SSLSocket.new(sock, ssl_context)
+    sock.sync = true
+    sock.connect
+    sock.puts "NICK bncbot"
+    sock.puts "USER bncbot bncbot bncbot :bncbot"
+    sock.puts "PASS #{$config["zncservers"][server]["username"]}:#{$config["zncservers"][server]["password"]}"
+    if unblock
+      sock.puts "PRIVMSG *blockuser :unblock #{user}"
+    else
+      sock.puts "PRIVMSG *blockuser :block #{user}"
+    end
+    
+    Thread.new do
+      Timeout::timeout(10) do
+        while line = sock.gets
+          if line =~ /^:\*blockuser!znc@bnc\.im PRIVMSG bncbot :(.+)$/
+            m.reply "#{Format(:bold, "[#{server}]")} #{$1}"
+          end
+        end
+      end
+    end
   end
 end

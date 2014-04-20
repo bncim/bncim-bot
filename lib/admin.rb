@@ -99,6 +99,10 @@ class AdminPlugin
   
   match "help", method: :help
   
+  def self.do_net_view(m, network)
+    network_view(m, network)
+  end
+  
   def block(m, server, user)
     return unless m.channel == "#bnc.im-admin"
     
@@ -723,11 +727,15 @@ class AdminPlugin
       replies << reply[0..-3]
     end
     if sum == 0
-      m.reply "Error: u wot m8?"
+      m.reply "No networks named \"#{network}\" were found."
       return
     end
-    m.reply "#{Format(:bold, "[#{network}]")} Network Counts - #{sum} Users"
-    replies.each { |r| m.reply r }
+    if m.nil?
+      return ["#{Format(:bold, "[#{network}]")} Network Counts - #{sum} Users"] + replies
+    else
+      m.reply "#{Format(:bold, "[#{network}]")} Network Counts - #{sum} Users"
+      replies.each { |r| m.reply r }
+    end
   end
     
   def fverify(m, id)

@@ -300,19 +300,12 @@ class RequestPlugin
       Mail.request_waiting(email, r)
     end
     adminmsg("#{Format(:red, "[NEW REQUEST]")} #{format_status(r)}")
-        
-    adminmsg "Attempting to crawl #{r.server}:#{r.port} (timeout 20 sec)"
     
-    begin
-      results = Crawler.crawl(r.server, r.port)
-    rescue => e
-      adminmsg "Crawling failed! Error: #{e.message}"
-      return
-    end
+    netname = Domainatrix.parse(r.server).domain
+    netname = Domainatrix.parse(addr.split(" ")[0]).domain unless addr.nil?
     
-    results.each do |line|
-      adminmsg "#{Format(:bold, "[#{r.server}]")} #{line}"
-    end
+    results = AdminPlugin.do_net_view(nil, netname)    
+    results.each { |l| adminmsg l }
   end  
   
   def help(m)

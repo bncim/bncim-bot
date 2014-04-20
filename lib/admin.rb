@@ -352,7 +352,9 @@ class AdminPlugin
     
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Interface")
     results.each do |user|
-      m.reply " " + user.server.ljust(8) + user.username
+      if user.networks.size == 0
+        m.reply " " + user.server.ljust(8) + user.username
+      end
       user.networks.each do |network|
         if network.online
           if user.blocked?

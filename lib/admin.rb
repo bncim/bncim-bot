@@ -107,7 +107,7 @@ class AdminPlugin
         if $userdb.servers[server].users[user].blocked?
           m.reply "#{Format(:bold, "Error:")} User #{user} is already blocked."
         else
-          do_block(server, user)
+          do_block(m, server, user)
         end
       else
         m.reply "#{Format(:bold, "Error:")} User #{user} not found on #{server}."
@@ -124,7 +124,7 @@ class AdminPlugin
     if $userdb.servers.has_key? server
       if $userdb.servers[server].users.has_key? user
         if $userdb.servers[server].users[user].blocked?
-          do_block(server, user, true)
+          do_block(m, server, user, true)
         else
           m.reply "#{Format(:bold, "Error:")} User #{user} is not blocked."
         end
@@ -813,7 +813,7 @@ class AdminPlugin
     $adminbot.irc.send("PRIVMSG #bnc.im-admin :#{text}")
   end
   
-  def do_block(server, user, unblock = false)
+  def do_block(m, server, user, unblock = false)
     sock = TCPSocket.new($config["zncservers"][server]["addr"], $config["zncservers"][server]["port"].to_i)
     ssl_context = OpenSSL::SSL::SSLContext.new
     ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE

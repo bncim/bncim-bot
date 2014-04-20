@@ -32,15 +32,15 @@ end
 
 class TodoPlugin 
   include Cinch::Plugin
-  match /^todo$/i, method: :list
-  match /^todo list$/i, method: :list
-  match /^todo list (\S+)\s*$/i, method: :list_items
+  match /todo$/i, method: :list
+  match /todo list$/i, method: :list
+  match /todo list (\S+)\s*$/i, method: :list_items
   
-  match /^todo add (\S+)\s*$/i, method: :add_cat
-  match /^todo del (\S+)\s*$/i, method: :del_cat
+  match /todo add (\S+)\s*$/i, method: :add_cat
+  match /todo del (\S+)\s*$/i, method: :del_cat
   
-  match /^todo add (\S+) (.+)\s*$/i, method: :add_item
-  match /^todo add (\S+) (\d+)\s*$/i, method: :del_item
+  match /todo add (\S+) (.+)\s*$/i, method: :add_item
+  match /todo add (\S+) (\d+)\s*$/i, method: :del_item
   
   def list(m)
     return unless m.channel == "#bnc.im-admin"

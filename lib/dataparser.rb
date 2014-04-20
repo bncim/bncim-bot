@@ -245,6 +245,7 @@ module ZNC
           
           c = 0
           while line = sock.gets
+            puts line
             if line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :\| (\S+)\s+\|\s*$/
               c += 1
               username = $1

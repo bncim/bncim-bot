@@ -322,9 +322,17 @@ class AdminPlugin
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Interface")
     results.each do |user, network|
       if network.online
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + get_interface_name(network.bindhost)
+        if user.blocked?
+          m.reply Format(:red, " " + user.server.ljust(8) + user.username.ljust(16) + network.name.ljust(78) + get_interface_name(network.bindhost))
+        else
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(78)) + get_interface_name(network.bindhost)
+        end
       else
-        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + get_interface_name(network.bindhost)
+        if user.blocked?
+          m.reply Format(:red, " " + user.server.ljust(8) + user.username.ljust(16) + network.name.ljust(78) + get_interface_name(network.bindhost))
+        else
+          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + get_interface_name(network.bindhost)
+        end
       end
     end
     m.reply Format(:bold, " End of list.")
@@ -347,9 +355,17 @@ class AdminPlugin
       m.reply " " + user.server.ljust(8) + user.username
       user.networks.each do |network|
         if network.online
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(18)) + network.user.ljust(60) + get_interface_name(network.bindhost)
+          if user.blocked?
+            m.reply Format(:red, " " + user.server.ljust(8) + user.username.ljust(16) + network.name.ljust(78) + get_interface_name(network.bindhost))
+          else
+            m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:green, network.name.ljust(78)) + get_interface_name(network.bindhost)
+          end
         else
-          m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + get_interface_name(network.bindhost)
+          if user.blocked?
+            m.reply Format(:red, " " + user.server.ljust(8) + user.username.ljust(16) + network.name.ljust(78) + get_interface_name(network.bindhost))
+          else
+            m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + get_interface_name(network.bindhost)
+          end
         end
       end
     end

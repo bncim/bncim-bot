@@ -15,7 +15,7 @@ class TodoDB
   def initialize(file)
     @file = file
     if File.exists?(@file)
-      @data = YAML.parse_file(@file)
+      @data = YAML.load_file(@file)
     else
       puts "Warning: todo db #{@file} does not exist. Skipping loading."
       @data = Hash.new

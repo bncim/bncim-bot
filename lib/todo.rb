@@ -118,10 +118,10 @@ class TodoPlugin
     data = $tododb.data
     if data.has_key? cat
       if data[cat][index].nil?
-        m.reply "#{Format(:bold, "Error:")} Item ##{index} not found."
+        m.reply "#{Format(:bold, "Error:")} Item ##{index + 1} not found."
       else
         data[cat].delete data[cat][index]
-        m.reply "Deleted item ##{index}."
+        m.reply "Deleted item ##{index + 1}."
       end
     else
       m.reply "#{Format(:bold, "Error:")} Category \"#{cat}\" does not exist."

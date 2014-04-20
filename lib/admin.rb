@@ -95,6 +95,7 @@ class AdminPlugin
   match "blocked", method: :blocked
   match /block (\S+) (\S+)/, method: :block
   match /unblock (\S+) (\S+)/, method: :unblock
+  match /network (\S+)/i, method: :network_view
   
   match "help", method: :help
   
@@ -167,7 +168,7 @@ class AdminPlugin
     m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !approve <id> <interface> [network name] [irc server] [irc port]"
     m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
     m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname> | !blocked | ![un]block <server> <user>"
-    m.reply "#{Format(:bold, "[MANAGEMENT]")} !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
+    m.reply "#{Format(:bold, "[MANAGEMENT]")} !network <network> | !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
     m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
   end 
@@ -699,6 +700,26 @@ class AdminPlugin
     end
   end
   
+  def network_view(m, network)
+    return unless m.channel == "#bnc.im-admin"
+    m.reply "#{Format(:bold, "#{name}")} Network Counts"
+    ips = $config["ips"]
+    ips.each do |name, addrs|
+      ipv4 = addrs["ipv4"]
+      ipv6 = addrs["ipv6"]
+      reply = "#{Format(:bold, "[#{name}]")} #{Format(:bold, "Interfaces:")} "
+      ipv4.each do |ip|
+        reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{$userdb.conns_on_iface(ip, network).to_s.rjust(2, '0')}), "
+      end
+      unless ipv6.nil?
+        ipv6.each do |ip|
+          reply = reply + "#{name}-6-#{ipv6.index(ip)} (#{$userdb.conns_on_iface(ip, network).to_s.rjust(2, '0')}), "
+        end
+      end
+      m.reply reply[0..-3]
+    end
+  end
+    
   def fverify(m, id)
     return unless m.channel == "#bnc.im-admin"
     unless RequestDB.requests.has_key?(id.to_i)

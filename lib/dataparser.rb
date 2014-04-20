@@ -46,6 +46,20 @@ module ZNC
       return networks
     end
     
+    def conns_on_iface(ip, seeknet)
+      result = 0
+      @users.each do |username, user|
+        user.networks.each do |network|
+          if network.name == network
+            if network.bindhost == ip
+              result += 1
+            end
+          end
+        end
+      end
+      return result
+    end
+    
     def blocked_users
       @users.select { |k, u| u.blocked? }
     end

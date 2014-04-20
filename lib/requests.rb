@@ -302,7 +302,6 @@ class RequestPlugin
     adminmsg("#{Format(:red, "[NEW REQUEST]")} #{format_status(r)}")
     
     netname = Domainatrix.parse(r.server).domain
-    netname = Domainatrix.parse(addr.split(" ")[0]).domain unless addr.nil?
     
     results = AdminPlugin.do_net_view(nil, netname)    
     results.each { |l| adminmsg l }

@@ -722,6 +722,10 @@ class AdminPlugin
       end
       replies << reply[0..-3]
     end
+    if sum == 0
+      m.reply "Error: u wot m8?"
+      return
+    end
     m.reply "#{Format(:bold, "[#{network}]")} Network Counts - #{sum} Users"
     replies.each { |r| m.reply r }
   end

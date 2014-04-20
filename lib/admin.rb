@@ -92,6 +92,7 @@ class AdminPlugin
   match /seeip (\S+)/i, method: :seeip
   match /seeinterface (\S+)/i, method: :seeinterface
   match /genpass (\d+)/i, method: :genpass
+  match "blocked", method: :blocked
   
   match "help", method: :help
   
@@ -110,11 +111,18 @@ class AdminPlugin
     m.reply "The current set of user data was updated at: #{Format(:bold, $userdb.updated.ctime)} (#{Time.diff($userdb.updated, Time.now)[:diff]} ago)"
   end
   
+  def blocked(m)
+    return unless m.channel == "#bnc.im-admin"
+    $userdb.servers.each do |name, server|
+      m.reply Format(:bold, "[#{name}]") + " #{server.blocked_users.keys.join(", ")}."
+    end
+  end
+  
   def help(m)
     return unless m.channel == "#bnc.im-admin"
     m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !approve <id> <interface> [network name] [irc server] [irc port]"
     m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
-    m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname>"
+    m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname> | !blocked"
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
     m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 

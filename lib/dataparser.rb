@@ -4,11 +4,16 @@ require 'openssl'
 module ZNC
   class User 
     attr_reader :username, :server
-    attr_accessor :networks
+    attr_accessor :networks, :blocked
   
     def initialize(username, server)
       @username, @server = username, server
       @networks = Array.new
+      @blocked = false
+    end
+    
+    def blocked?
+      @blocked
     end
     
     def to_s
@@ -39,6 +44,10 @@ module ZNC
         networks += user.networks.size
       end
       return networks
+    end
+    
+    def blocked_users
+      @users.select { |k, u| u.blocked? }
     end
     
     def to_s
@@ -227,13 +236,29 @@ module ZNC
                   end
                 end
               end
-              break
+              break   
             end
-          end        
-          sock.close
+          end
+          sock.puts "PRIVMSG *blockuser LIST"
+          
           users = UserNetworksParser.parse(server.name, lines)
-        
+          
+          c = 0
+          while line = sock.gets
+            if line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :\| (\S+)\s+\|\s*$/
+              c += 1
+              username = $1
+              if users.has_key? username
+                users[username].blocked = true
+              end
+            elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :\+\-+\+\s*/
+              break if c > 3
+            end
+          end
+                
           @servers[server.name].users = users
+          sock.close
+          
           @updated = Time.now
         rescue => e
           puts "Could not update server: #{name}."

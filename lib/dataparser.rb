@@ -254,6 +254,7 @@ module ZNC
                 users[username].blocked = true
               end
             elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :/
+              puts "adsd"
               c += 1
             elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :\+-+\+\s*/
               puts c

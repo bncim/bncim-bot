@@ -105,6 +105,7 @@ class TodoPlugin
     data = $tododb.data
     if data.has_key? cat
       data[cat] << item
+      $tododb.data = data
       m.reply "Item added."
     else
       m.reply "#{Format(:bold, "Error:")} Category \"#{cat}\" does not exist."

@@ -177,9 +177,11 @@ class AdminPlugin
     m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !approve <id> <interface> [network name] [irc server] [irc port]"
     m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
     m.reply "#{Format(:bold, "[USERS]")} !addnetwork <server> <username> <netname> <addr> <port> | !delnetwork <server> <username> <netname> | !blocked | ![un]block <server> <user>"
-    m.reply "#{Format(:bold, "[MANAGEMENT]")} !network <network> | !cp <server> <command> | !todo | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
+    m.reply "#{Format(:bold, "[MANAGEMENT]")} !network <network> | !cp <server> <command> | !serverbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
     m.reply "#{Format(:bold, "[MISC]")} !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
+    m.reply "#{Format(:bold, "[TODO]")} !todo | !todo list <category> | !todo add <category> <item> | !todo del <category> | !todo del <category> <num>" 
+    
   end 
   
   def seeip(m, interface)

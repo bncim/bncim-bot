@@ -24,7 +24,7 @@ class TodoDB
   
   def data=(newdata)
     @data = newdata
-    f = File.open(@file, w)
+    f = File.open(@file, 'w')
     YAML.dump(@data, f)
     f.close
   end

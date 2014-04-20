@@ -49,7 +49,7 @@ $config["servers"].each do |name|
   bot.loggers.clear
   bot.loggers << BNCLogger.new(name, File.open("log/irc-#{name}.log", "a"))
   bot.loggers << BNCLogger.new(name, STDOUT)
-  bot.loggers.level = :info
+  bot.loggers.level = :error
   if $config["adminnet"] == name
     $adminbot = bot
   end

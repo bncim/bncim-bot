@@ -708,7 +708,7 @@ class AdminPlugin
     ips.each do |name, addrs|
       ipv4 = addrs["ipv4"]
       ipv6 = addrs["ipv6"]
-      reply = "#{Format(:bold, "[#{network}]")} #{Format(:bold, "Interfaces:")} "
+      reply = "#{Format(:bold, "[#{name}]")} #{Format(:bold, "Interfaces:")} "
       ipv4.each do |ip|
         reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{servers[name].conns_on_iface(ip, network).to_s.rjust(2, '0')}), "
       end

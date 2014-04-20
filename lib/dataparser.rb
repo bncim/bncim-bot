@@ -50,7 +50,7 @@ module ZNC
       result = 0
       @users.each do |username, user|
         user.networks.each do |network|
-          if network.name == network
+          if network.name == seeknet
             if network.bindhost == ip
               result += 1
             end

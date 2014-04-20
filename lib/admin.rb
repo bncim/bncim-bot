@@ -451,7 +451,7 @@ class AdminPlugin
 
   def cp(m, server, command)
     return unless m.channel == "#bnc.im-admin"
-    if command.downcase =~ /^reconnect eren/
+    if command.downcase =~ /^(dis|re|)connect eren/
       Channel("#bnc.im-admin").kick m.user
       return
     end

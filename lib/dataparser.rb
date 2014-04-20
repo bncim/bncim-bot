@@ -46,11 +46,23 @@ module ZNC
       return networks
     end
     
+    def conns_for_network(seeknet)
+      result = 0
+      @users.each do |username, user|
+        user.networks.each do |network|
+          if network.name.downcase == seeknet.downcase
+            result += 1
+          end
+        end
+      end
+      return result
+    end
+    
     def conns_on_iface(ip, seeknet)
       result = 0
       @users.each do |username, user|
         user.networks.each do |network|
-          if network.name == seeknet
+          if network.name.downcase == seeknet.downcase
             if network.bindhost == ip
               result += 1
             end

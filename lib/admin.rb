@@ -114,7 +114,11 @@ class AdminPlugin
   def blocked(m)
     return unless m.channel == "#bnc.im-admin"
     $userdb.servers.each do |name, server|
-      m.reply Format(:bold, "[#{name}]") + " #{server.blocked_users.keys.join(", ")}."
+      if server.blocked_users.size > 0
+        m.reply Format(:bold, "[#{name}]") + " #{server.blocked_users.keys.join(", ")}."
+      else
+        m.reply Format(:bold, "[#{name}]") + " None."
+      end
     end
   end
   

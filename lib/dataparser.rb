@@ -245,16 +245,16 @@ module ZNC
           
           c = 0
           while line = sock.gets
-            puts line
             if line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :\| (\S+)\s+\|\s*$/
               c += 1
               username = $1
               puts "blocked user #{$1}"
               if users.has_key? username
                 users[username].blocked = true
+              else
+                sock.puts "PRIVMSG *blockuser :unblock #{username}"
               end
             elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :No users blocked\s*$/
-              puts "none"
               break
             elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :/
               c += 1

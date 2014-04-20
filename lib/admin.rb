@@ -685,8 +685,8 @@ class AdminPlugin
       ips.each do |name, addrs|
         ipv4 = addrs["ipv4"]
         ipv6 = addrs["ipv6"]
-        reply = "#{Format(:bold, "[#{name}:#{$userdb.servers[name].networks_count} " + \
-                "#{Format(:bold, "Interfaces:")} " 
+        reply = "#{Format(:bold, "[#{name}:#{$userdb.servers[name].networks_count}]"} + \
+                "#{Format(:bold, "Interfaces:")}"  
         ipv4.each do |ip|
           reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{$userdb.bindhost_user_count(ip)}), "
         end

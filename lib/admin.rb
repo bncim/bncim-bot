@@ -702,12 +702,12 @@ class AdminPlugin
   
   def network_view(m, network)
     return unless m.channel == "#bnc.im-admin"
-    m.reply "#{Format(:bold, "#{name}")} Network Counts"
+    m.reply "#{Format(:bold, "#{network}")} Network Counts"
     ips = $config["ips"]
     ips.each do |name, addrs|
       ipv4 = addrs["ipv4"]
       ipv6 = addrs["ipv6"]
-      reply = "#{Format(:bold, "[#{name}]")} #{Format(:bold, "Interfaces:")} "
+      reply = "#{Format(:bold, "[#{network}]")} #{Format(:bold, "Interfaces:")} "
       ipv4.each do |ip|
         reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{$userdb.conns_on_iface(ip, network).to_s.rjust(2, '0')}), "
       end

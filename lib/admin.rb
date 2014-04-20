@@ -283,7 +283,11 @@ class AdminPlugin
     end 
     m.reply Format(:bold, " Server  Username        Network           Userhost                                                    Interface")
     results.each do |user, network|
-      m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + get_interface_name(network.bindhost)
+      if user.blocked?
+        m.reply Format(:red, " " + user.server.ljust(8) + user.username.ljust(16) + network.name.ljust(78) + get_interface_name(network.bindhost))
+      else
+        m.reply " " + user.server.ljust(8) + user.username.ljust(16) + Format(:red, network.name.ljust(78)) + get_interface_name(network.bindhost)
+      end
     end
     m.reply Format(:bold, " End of list.")
   end

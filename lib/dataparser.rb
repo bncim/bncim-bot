@@ -255,7 +255,7 @@ module ZNC
               end
             elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :/
               c += 1
-            elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :\+\-+\+\s*/
+            elsif line =~ /^:\*blockuser!znc@bnc.im PRIVMSG bncbot :\+-+\+\s*/
               break if c > 3
             end
           end

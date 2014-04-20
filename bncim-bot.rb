@@ -19,7 +19,7 @@ require 'lib/admin'
 require 'lib/relay'
 require 'lib/logger'
 require 'lib/mail'
-require 'lib/todo'
+require 'lib/notes'
 require 'lib/dataparser'
 require 'lib/network'
 
@@ -42,7 +42,7 @@ $config["servers"].each do |name|
       if $config["adminnet"] == name
         c.messages_per_second = 20
         c.plugins.plugins << AdminPlugin
-        c.plugins.plugins << TodoPlugin
+        c.plugins.plugins << NotePlugin
       end
     end
   end
@@ -85,7 +85,7 @@ $config["zncservers"].each do |name, server|
 end
 
 $userdb = ZNC::UserDB.new(servers)
-$tododb = TodoDB.new($config["tododb"])
+$notedb = TodoDB.new($config["tododb"])
 
 puts "Initialization complete. Connecting to IRC and ZNC..."
 

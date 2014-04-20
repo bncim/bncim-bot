@@ -80,7 +80,6 @@ class AdminPlugin
   match "pending", method: :pending
   match "unconfirmed", method: :unconfirmed
   match "reports", method: :reports
-  match "todo", method: :todo
   match /fverify\s+(\d+)/, method: :fverify
   match "servers", method: :servers
   match /broadcast (.+)/, method: :broadcast
@@ -811,11 +810,6 @@ class AdminPlugin
     pending.each do |report|
       m.reply format_report(report)
     end
-  end
-  
-  def todo(m)
-    reports(m)
-    pending(m)
   end
   
   def format_report(r)

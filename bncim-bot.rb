@@ -38,11 +38,10 @@ $config["servers"].each do |name|
       c.port = $config["bot"]["zncport"]
       c.password = "bncbot/#{name}:#{$config["bot"]["zncpass"]}"
       c.ssl.use = true
-      c.plugins.plugins = [RequestPlugin, RelayPlugin, ReportPlugin]
+      c.plugins.plugins = [RequestPlugin, RelayPlugin, ReportPlugin, TodoPlugin]
       if $config["adminnet"] == name
         c.messages_per_second = 20
-        c.plugins.plugins << [AdminPlugin, TodoPlugin]
-        puts c.plugins.plugins
+        c.plugins.plugins << AdminPlugin
       end
     end
   end

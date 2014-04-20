@@ -43,7 +43,6 @@ class TodoPlugin
   match /^todo add (\S+) (\d+)\s*$/i, method: :del_item
   
   def list(m)
-    m.reply "ok"
     return unless m.channel == "#bnc.im-admin"
     categories = $tododb.data
     if categories.size == 0

@@ -615,7 +615,7 @@ class AdminPlugin
     adminmsg("Do not forget to update the spreadsheet: http://bit.ly/1lFDgj5")
     $bots.each do |network, bot|
       begin
-        bot.Channel("#bnc.im").msg " :Request ##{id} for user #{r.source.to_s.split("!")[0]} has been #{Format(:green, :bold, "approved")} by #{m.user.nick}. This request was waiting for #{Time.diff(Time.now, r.ts)[:diff]}.")
+        bot.Channel("#bnc.im").msg " :Request ##{id} for user #{r.source.to_s.split("!")[0]} has been #{Format(:green, :bold, "approved")} by #{m.user.nick}. This request was waiting for #{Time.diff(Time.now, r.ts)[:diff]}."
       rescue => e
         # pass
       end

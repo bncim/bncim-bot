@@ -617,7 +617,7 @@ class AdminPlugin
       begin
         bot.Channel("#bnc.im").msg " :Request ##{id} for user #{r.source.to_s.split("!")[0]} has been #{Format(:green, :bold, "approved")} by #{m.user.nick}. This request was waiting for #{Time.diff(Time.now, r.ts)[:diff]}."
       rescue => e
-        # pass
+        puts e
       end
     end
     $userdb.update

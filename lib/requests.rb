@@ -89,6 +89,7 @@ class RequestDB
 
   def self.confirm(id)
     @@requests[id].status = 1
+    @@requests[id].ts = Time.now.to_i
     RequestDB.save($config["requestdb"])
   end
 

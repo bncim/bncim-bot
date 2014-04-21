@@ -13,6 +13,25 @@ require 'openssl'
 require 'timeout'
 require 'time_diff'
 
+class Numeric
+  def duration
+    secs  = self.to_int
+    mins  = secs / 60
+    hours = mins / 60
+    days  = hours / 24
+
+    if days > 0
+      "#{days} day#{'s' unless days == 1} and #{hours % 24} hour#{'s' unless (hours % 24) == 1}"
+    elsif hours > 0
+      "#{hours} hour#{'s' unless (hours % 24) == 1} and #{mins % 60} minute#{'s' unless (mins % 60) == 1}"
+    elsif mins > 0
+      "#{mins} minute#{'s' unless (mins % 60) == 1} and #{secs % 60} second#{'s' unless (secs % 60) == 1}"
+    elsif secs >= 0
+      "#{secs} second#{'s' unless (secs % 60) == 1}"
+    end
+  end
+end
+
 class Crawler
   def self.crawl(server, port)
     ssl = false
@@ -159,7 +178,8 @@ class AdminPlugin
     
   def data(m)
     return unless m.channel == "#bnc.im-admin"
-    m.reply "The current set of user data was updated at: #{Format(:bold, $userdb.updated.ctime)} (#{Time.diff($userdb.updated, Time.now)[:diff]} ago)"
+    diff = Time.now.to_i - $userdb.updated.to_i
+    m.reply "The current set of user data was updated at: #{Format(:bold, $userdb.updated.ctime)} (#{diff.duration} ago)"
   end
   
   def blocked(m)
@@ -616,11 +636,20 @@ class AdminPlugin
     $config["notifymail"].each do |email|
       Mail.send_approved_admin(email, r.id, m.user.mask.to_s)
     end
-    adminmsg("Request ##{id} for user #{r.source.to_s.split("!")[0]} for network #{netname} #{Format(:green, :bold, "approved")} to #{server} " + \
-             "(#{ip}) by #{m.user}. Password: #{password}")
+    elapsed = Time.now.to_i - r.ts.to_i
+    
+    adminmsg("Request ##{id} for user #{r.source.to_s.split("!")[0]} #{Format(:green, :bold, "approved")} to #{server} " + \
+             "(#{ip}) by #{m.user}. Request approved in #{elapsed.duration}. Password: #{password}")
+             
+    if elapsed < 120
+      3.times { adminmsg "Wow, that's a quick approval! #{Format(:bold, :green, "WELL DONE #{m.user.nick}!!!!!!!!!!!!!")}" }
+    end            
+    
     $bots.each do |network, bot|
       begin
-        bot.Channel("#bnc.im").msg "Request ##{id} for user #{r.source.to_s.split("!")[0]} has been #{Format(:green, :bold, "approved")} by #{m.user.nick}." 
+        elapsed = Time.now.to_i - r.ts.to_i
+        bot.Channel("#bnc.im").msg "Request ##{id} for user #{r.source.to_s.split("!")[0]} has been #{Format(:green, :bold, "approved")} by #{m.user.nick}. " + \
+                                   "This request was waiting for #{elapsed.duration}."
       rescue => e
         puts e
       end

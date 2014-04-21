@@ -103,6 +103,7 @@ class AdminPlugin
   match "blocked", method: :blocked
   match /block (\S+) (\S+)/, method: :block
   match /unblock (\S+) (\S+)/, method: :unblock
+  match /todo\s*$/, method: :todo
   match /net (\S+)/i, method: :network_view
   match /^\-(\S+)$/i, method: :network_view, use_prefix: false
   
@@ -149,6 +150,11 @@ class AdminPlugin
   def genpass(m, len)
     return unless m.channel == "#bnc.im-admin"
     m.reply RequestDB.gen_key(len.to_i)
+  end
+  
+  def todo(m)
+    pending(m)
+    reports(m)
   end
     
   def data(m)

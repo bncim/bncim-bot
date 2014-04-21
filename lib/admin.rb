@@ -620,7 +620,7 @@ class AdminPlugin
              "(#{ip}) by #{m.user}. Password: #{password}")
     $bots.each do |network, bot|
       begin
-        bot.Channel("#bnc.im").msg "Request ##{id} for user #{r.source.to_s.split("!")[0]} has been #{Format(:green, :bold, "approved")} by #{m.user.nick}. This request was waiting for #{Time.diff(Time.now, r.ts)[:diff]}."
+        bot.Channel("#bnc.im").msg "Request ##{id} for user #{r.source.to_s.split("!")[0]} has been #{Format(:green, :bold, "approved")} by #{m.user.nick}." 
       rescue => e
         puts e
       end

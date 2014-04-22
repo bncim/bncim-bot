@@ -11,7 +11,6 @@
 require 'socket'
 require 'openssl'
 require 'timeout'
-require 'time_diff'
 
 class Numeric
   def duration

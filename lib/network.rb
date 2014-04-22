@@ -14,6 +14,11 @@ class NetworkDB
     sum = 0
     ips = $config["ips"]
     servers = $userdb.servers
+    
+    if $netnotedb.data.has_key?(network)
+      replies = ["#{Cinch::Formatting.format(:bold, "[#{network}]")} #{$netnotedb.data[network]}"]
+    end
+    
     ips.each do |name, addrs|
       ipv4 = addrs["ipv4"]
       ipv6 = addrs["ipv6"]
@@ -34,6 +39,6 @@ class NetworkDB
       return ["No networks named \"#{network}\" were found."]
     end
     
-    return ["#{Cinch::Formatting.format(:bold, "[#{network}]")} Network Counts - #{sum} Users"] + replies
+    replies.unshift "#{Cinch::Formatting.format(:bold, "[#{network}]")} Network Counts - #{sum} Users"
   end
 end

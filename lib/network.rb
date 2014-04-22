@@ -15,7 +15,7 @@ class NetworkDB
     ips = $config["ips"]
     servers = $userdb.servers
     
-    if $netnotedb.data.has_key?(network)
+    if $netnotedb.data.has_key?(network.downcase)
       replies = ["#{Cinch::Formatting.format(:bold, "[#{network}]")} #{$netnotedb.data[network]}"]
     end
     

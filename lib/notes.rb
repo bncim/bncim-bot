@@ -42,6 +42,30 @@ class NotePlugin
   match /notes? add (\S+) (.+)\s*$/i, method: :add_item
   match /notes? dele?t?e? (\S+) (\d+)\s*$/i, method: :del_item
   
+  match /netnote (\S+)\s*$/i, method: :get_netnote
+  match /netnote (\S+) (.+)\s*$/i, method: :set_netnote
+  
+  def get_netnote(m, network)
+    return unless m.channel == "#bnc.im-admin"
+    data = $netnotedb.data
+    network.downcase!
+    note = data[network]
+    if note.nil?
+      m.reply "No note for network #{network}."
+    else
+      m.reply "Note for #{network}: #{note}"
+    end
+  end
+  
+  def set_netnote(m, network, note)
+    return unless m.channel == "#bnc.im-admin"
+    data = $netnotedb.data
+    network.downcase!
+    data[network] = note
+    m.reply "Note for #{network} has been set."
+    $netnotedb.data = data
+  end
+  
   def list(m)
     return unless m.channel == "#bnc.im-admin"
     categories = $notedb.data

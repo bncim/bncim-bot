@@ -86,6 +86,7 @@ end
 
 $userdb = ZNC::UserDB.new(servers)
 $notedb = NoteDB.new($config["notedb"])
+$netnotedb = NoteDB.new($config["netnotedb"])
 
 puts "Initialization complete. Connecting to IRC and ZNC..."
 

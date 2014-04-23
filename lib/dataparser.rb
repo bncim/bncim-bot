@@ -303,7 +303,7 @@ module ZNC
           next
         end
       end
+      @updating = false
     end
-    @updating = false
   end
 end

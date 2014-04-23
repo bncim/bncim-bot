@@ -292,6 +292,9 @@ class AdminPlugin
       server.users.each do |username, user|
         user.networks.each do |network|
           unless network.online
+            puts name
+            puts user
+            puts network
             results[name] << [user, network] unless user.blocked?
           end
         end
@@ -299,7 +302,7 @@ class AdminPlugin
     end
     
     if results.empty?
-      m.reply "No unblocked offline users to connect."
+      m.reply "#{Format(:bold, "Error:")} No unblocked offline users to connect."
       return
     end
     

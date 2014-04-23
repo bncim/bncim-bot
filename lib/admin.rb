@@ -287,15 +287,18 @@ class AdminPlugin
   
   def connectall(m)
     return unless command_allowed(m, true)
-    results = Hash.new([])
+    results = Hash.new()
     $userdb.servers.each do |name, server|
       server.users.each do |username, user|
         user.networks.each do |network|
           unless network.online
-            puts name
-            puts user
-            puts network
-            results[name] << [user, network] unless user.blocked?
+            unless user.blocked?
+              if results.has_key? name
+                results[name] << [user, network]
+              else
+                results[name] = [user, network]
+              end
+            end
           end
         end
       end

@@ -99,7 +99,6 @@ class AdminPlugin
   match "unconfirmed", method: :unconfirmed
   match "reports", method: :reports
   match /fverify\s+(\d+)/, method: :fverify
-  match "connectall", method: :connectall
   match "servers", method: :servers
   match /broadcast (.+)/, method: :broadcast
   match /sbroadcast (\w+) (.+)/, method: :serverbroadcast
@@ -283,60 +282,6 @@ class AdminPlugin
       end
     end
     m.reply "#{total} connections found for /#{str}/. #{offline} are offline."
-  end
-  
-  def connectall(m)
-    return unless command_allowed(m, true)
-    results = Hash.new()
-    $userdb.servers.each do |name, server|
-      server.users.each do |username, user|
-        user.networks.each do |network|
-          unless network.online
-            unless user.blocked?
-              if results.has_key? name
-                results[name] << [user.username, network.name]
-              else
-                results[name] = [user.username, network.name]
-              end
-            end
-          end
-        end
-      end
-    end
-    
-    if results.empty?
-      m.reply "#{Format(:bold, "Error:")} No unblocked offline users to connect."
-      return
-    end
-    
-    results.each do |srv, offline|
-      next if offline.empty?
-      sock = TCPSocket.new($config["zncservers"][srv]["addr"], $config["zncservers"][srv]["port"].to_i)
-      ssl_context = OpenSSL::SSL::SSLContext.new
-      ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      sock = OpenSSL::SSL::SSLSocket.new(sock, ssl_context)
-      sock.sync = true
-      sock.connect
-      sock.puts "NICK bncbot"
-      sock.puts "USER bncbot bncbot bncbot :bncbot"
-      sock.puts "PASS #{$config["zncservers"][srv]["username"]}:#{$config["zncservers"][srv]["password"]}"
-      
-      offline.each do |user, network|
-        puts user
-        puts network
-        sock.puts "PRIVMSG *controlpanel :reconnect #{user} #{network}"
-      end
-    
-      Thread.new do
-        Timeout::timeout(20) do
-          while line = sock.gets
-            if line =~ /^:\*controlpanel!znc@bnc\.im PRIVMSG bncbot :(.+)$/
-              m.reply "#{Format(:bold, "[#{srv}]")} #{$1}"
-            end
-          end
-        end
-      end
-    end
   end
       
   def offline(m)

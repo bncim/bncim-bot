@@ -322,7 +322,7 @@ class AdminPlugin
       sock.puts "PASS #{$config["zncservers"][srv]["username"]}:#{$config["zncservers"][srv]["password"]}"
       
       offline.each do |ar|
-        sock.puts "PRIVMSG *controlpanel :reconnect #{user[0].username} #{user[1].name}"
+        sock.puts "PRIVMSG *controlpanel :reconnect #{ar[0].username} #{ar[1].name}"
       end
     
       Thread.new do

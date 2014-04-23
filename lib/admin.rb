@@ -867,7 +867,13 @@ class AdminPlugin
       m.reply "#{Format(:bold, "Error:")} user DB is currently updating, please wait a few seconds."
       return false
     end
-    return true
+    
+    if Channel("#bnc.im-admin").opped? m.user
+      return true
+    else
+      m.reply "#{Format(:bold, "Error:")} you are not authorised to use this command, bitch."
+      return false
+    end
   end
   
   def do_block(m, server, user, unblock = false)

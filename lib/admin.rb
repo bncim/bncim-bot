@@ -294,9 +294,9 @@ class AdminPlugin
           unless network.online
             unless user.blocked?
               if results.has_key? name
-                results[name] << [user, network]
+                results[name] << [user.username, network.name]
               else
-                results[name] = [user, network]
+                results[name] = [user.username, network.name]
               end
             end
           end
@@ -324,7 +324,7 @@ class AdminPlugin
       offline.each do |user, network|
         puts user
         puts network
-        sock.puts "PRIVMSG *controlpanel :reconnect #{user.username} #{network.name}"
+        sock.puts "PRIVMSG *controlpanel :reconnect #{user} #{network}"
       end
     
       Thread.new do

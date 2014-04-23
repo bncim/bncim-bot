@@ -321,8 +321,8 @@ class AdminPlugin
       sock.puts "USER bncbot bncbot bncbot :bncbot"
       sock.puts "PASS #{$config["zncservers"][srv]["username"]}:#{$config["zncservers"][srv]["password"]}"
       
-      offline.each do |user, network|
-        sock.puts "PRIVMSG *controlpanel :reconnect #{user.username} #{network.name}"
+      offline.each do |ar|
+        sock.puts "PRIVMSG *controlpanel :reconnect #{user[0].username} #{user[1].name}"
       end
     
       Thread.new do

@@ -174,6 +174,10 @@ class RequestPlugin
 
 	def stats(m)
     return unless m.channel == "#bnc.im"
+    if $userdb.updating?
+      m.reply "#{Format(:bold, "Error:")} Our servers are currently refreshing their user data. Please wait a few seconds and try again."
+      return
+    end
 	  m.reply "#{Format(:bold, "[Stats]")} Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
     relay_cmd_reply "#{Format(:bold, "[Stats]")} Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
   end
@@ -215,7 +219,7 @@ class RequestPlugin
   end
     
   def servers(m)
-    return if m.channel == "#bnc.im-admin"
+    return unless m.channel == "#bnc.im"
     m.reply "I am connected to the following IRC servers: #{$config["servers"][0..-2].join(", ")} and #{$config["servers"][-1]}."
     m.reply "I am connected to the following bnc.im servers: #{$config["zncservers"].keys[0..-2].join(", ")} and #{$config["zncservers"].keys[-1]}."
   end
@@ -225,6 +229,11 @@ class RequestPlugin
     if RequestDB.email_used?(email)
       m.reply "#{Format(:bold, "Error:")} That email has already been used. We only permit one account per user. If you " + \
               "need to add a network, use !report."
+      return
+    end
+    
+    if $userdb.updating?
+      m.reply "#{Format(:bold, "Error:")} Our servers are currently refreshing their user data. Please wait a few seconds and request again."
       return
     end
     

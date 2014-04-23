@@ -125,11 +125,12 @@ class AdminPlugin
   match /net (\S+)/i, method: :network_view
   match /^\-(\S+)$/i, method: :network_view, use_prefix: false
   
+  timer 120, method: :silent_update
+  
   match "help", method: :help
     
   def block(m, server, user)
-    return unless m.channel == "#bnc.im-admin"
-    
+    return unless command_allowed(m, true)
     server.downcase!
     if $userdb.servers.has_key? server
       if $userdb.servers[server].users.has_key? user
@@ -147,8 +148,7 @@ class AdminPlugin
   end
   
   def unblock(m, server, user)
-    return unless m.channel == "#bnc.im-admin"
-    
+    return unless command_allowed(m, true)
     server.downcase!
     if $userdb.servers.has_key? server
       if $userdb.servers[server].users.has_key? user
@@ -166,7 +166,7 @@ class AdminPlugin
   end
   
   def genpass(m, len)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     m.reply RequestDB.gen_key(len.to_i)
   end
   
@@ -176,13 +176,13 @@ class AdminPlugin
   end
     
   def data(m)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m, true)
     diff = Time.now.to_i - $userdb.updated.to_i
     m.reply "The current set of user data was updated at: #{Format(:bold, $userdb.updated.ctime)} (#{diff.duration} ago)"
   end
   
   def blocked(m)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m, true)
     $userdb.servers.each do |name, server|
       if server.blocked_users.size > 0
         m.reply Format(:bold, "[#{name}]") + " #{server.blocked_users.keys.join(", ")}."
@@ -193,7 +193,7 @@ class AdminPlugin
   end
   
   def help(m)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !approve <id> <interface> [network name] [irc server] [irc port]"
     m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
     m.reply "#{Format(:bold, "[USERS]")} !addnet <server> <username> <netname> <addr> <port> | !delnet <server> <username> <netname> | !blocked | ![un]block <server> <user>"
@@ -205,7 +205,7 @@ class AdminPlugin
   end 
   
   def seeip(m, interface)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     if interface =~ /^([a-z]{3}\d{1})\-(4|6)\-(\d+)$/
       server, proto, index = $1, $2, $3
       index = index.to_i
@@ -241,19 +241,19 @@ class AdminPlugin
   end
   
   def seeinterface(m, ip)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     m.reply Format(:bold, "[#{ip}]") + " " + get_interface_name(ip)
   end
   
   def update(m)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m, true)
     m.reply "Updating...."
     $userdb.update
     m.reply "Updated user data."
   end
   
   def crawl(m, server, port)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     m.reply "Attempting to crawl #{server}:#{port} (timeout 20 sec)"
     
     begin
@@ -269,7 +269,7 @@ class AdminPlugin
   end
   
   def netcount(m, str)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m, true)
     total, offline = 0, 0
     $userdb.servers.each do |name, server|
       server.users.each do |username, user|
@@ -284,21 +284,8 @@ class AdminPlugin
     m.reply "#{total} connections found for /#{str}/. #{offline} are offline."
   end
   
-  def get_interface_name(ip)
-    ips = $config["ips"]
-    ips.each do |name, addrs|
-      ipv4, ipv6 = addrs["ipv4"], addrs["ipv6"]
-      if ipv4.include? ip
-        return "#{name}-4-#{ipv4.index(ip)}"
-      elsif !ipv6.nil? and ipv6.include? ip 
-        return "#{name}-6-#{ipv6.index(ip)}"
-      end
-    end
-    return ip
-  end
-  
   def offline(m)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m, true)
     results = []
     $userdb.servers.each do |name, server|
       server.users.each do |username, user|
@@ -325,7 +312,7 @@ class AdminPlugin
   end
   
   def findnet(m, str, specserver = nil)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m, true)
     results = []
     $userdb.servers.each do |name, server|
       unless specserver.nil?
@@ -367,7 +354,7 @@ class AdminPlugin
   end
   
   def find(m, search_str, specserver = nil)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m, true)
     if search_str =~ /(eren|rylee|andrew|matthew|bncbot|templateuser)/i
       Channel("#bnc.im-admin").kick m.user
       return
@@ -404,7 +391,7 @@ class AdminPlugin
   end
   
   def stats(m)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m, true)
     m.reply "[Stats] Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
     servers = []
     $userdb.servers.each do |name, server|
@@ -414,7 +401,7 @@ class AdminPlugin
   end
   
   def addnetwork(m, server, username, netname, addrstr)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     server.downcase!
     netname.downcase!
     unless $zncs.has_key? server
@@ -431,7 +418,7 @@ class AdminPlugin
   end
   
   def delnetwork(m, server, username, netname)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     server.downcase!
     netname.downcase!
     unless $zncs.has_key? server
@@ -444,7 +431,7 @@ class AdminPlugin
   end
 
   def topic(m, topic)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     $bots.each_value do |bot|
       bot.Channel("#bnc.im").topic = topic
     end
@@ -452,7 +439,7 @@ class AdminPlugin
   end
   
   def broadcast(m, text)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     $bots.each_value do |bot|
       bot.irc.send("PRIVMSG #bnc.im :#{Format(:bold, "[BROADCAST]")} #{text}")
     end
@@ -464,7 +451,7 @@ class AdminPlugin
   end
   
   def serverbroadcast(m, server, text)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     server.downcase!
     unless $zncs.has_key? server
       m.reply "Server \"#{server}\" not found."
@@ -479,7 +466,7 @@ class AdminPlugin
   end
 
   def cp(m, server, command)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     if command.downcase =~ /^(dis|re|)connect eren/
       Channel("#bnc.im-admin").kick m.user
       return
@@ -517,25 +504,25 @@ class AdminPlugin
   end
 
   def ban(m, target)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     $bots.each_value { |b| b.irc.send("MODE #bnc.im +b #{target}") }
     m.reply "done!"
   end
 
   def unban(m, target)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     $bots.each_value { |b| b.irc.send("MODE #bnc.im -b #{target}") }
     m.reply "done!"
   end
 
   def kick(m, target, reason = "")
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     $bots.each_value { |b| b.irc.send("KICK #bnc.im #{target} :#{reason}") }
     m.reply "kicked #{target} in all channels (#{reason})"
   end
   
   def approve(m, id, interface, adminnetname = nil, addr = nil)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m, true)
     unless RequestDB.requests.has_key?(id.to_i)
       m.reply "Error: request ##{id} not found."
       return
@@ -657,7 +644,7 @@ class AdminPlugin
   end
   
   def reject(m, id, reason)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     unless RequestDB.requests.has_key?(id.to_i)
       m.reply "Error: request ##{id} not found."
       return
@@ -691,53 +678,34 @@ class AdminPlugin
     RequestDB.reject(r.id)
   end
   
-  def msg_to_control(msg)
-    "PRIVMSG *controlpanel :#{msg}"
-  end
-    
-  def find_server_by_ip(ip)
-    ips = $config["ips"]
-    ips.each do |server, addrs|
-      addrs.each_value do |addr|
-        addr.each do |a|
-          if a.downcase == ip.downcase
-            return server
-          end
-        end
-      end
-    end
-    return false
-  end
-  
   def servers(m)
-    if m.channel == "#bnc.im-admin"
-      ips = $config["ips"]
-      ips.each do |name, addrs|
-        ipv4 = addrs["ipv4"]
-        ipv6 = addrs["ipv6"]
-        reply = "#{Format(:bold, "[#{name}:#{$userdb.servers[name].networks_count}]")} " + \
-                "#{Format(:bold, "Interfaces:")} "  
-        ipv4.each do |ip|
-          reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{$userdb.bindhost_user_count(ip)}), "
-        end
-        unless ipv6.nil?
-          ipv6.each do |ip|
-            reply = reply + "#{name}-6-#{ipv6.index(ip)} (#{$userdb.bindhost_user_count(ip)}), "
-          end
-        end
-        m.reply reply[0..-3]
+    return unless command_allowed(m, true)
+    ips = $config["ips"]
+    ips.each do |name, addrs|
+      ipv4 = addrs["ipv4"]
+      ipv6 = addrs["ipv6"]
+      reply = "#{Format(:bold, "[#{name}:#{$userdb.servers[name].networks_count}]")} " + \
+              "#{Format(:bold, "Interfaces:")} "  
+      ipv4.each do |ip|
+        reply = reply + "#{name}-4-#{ipv4.index(ip)} (#{$userdb.bindhost_user_count(ip)}), "
       end
+      unless ipv6.nil?
+        ipv6.each do |ip|
+          reply = reply + "#{name}-6-#{ipv6.index(ip)} (#{$userdb.bindhost_user_count(ip)}), "
+        end
+      end
+      m.reply reply[0..-3]
     end
   end
   
   def network_view(m, network)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m, true)
     reply = NetworkDB.network_view(network)
     reply.each { |l| m.reply l }
   end
     
   def fverify(m, id)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     unless RequestDB.requests.has_key?(id.to_i)
       m.reply "Error: request ##{id} not found."
       return
@@ -758,8 +726,7 @@ class AdminPlugin
   end
 
   def requser(m, username)
-    return unless m.channel == "#bnc.im-admin"
-    
+    return unless command_allowed(m)
     RequestDB.requests.each do |key, req|
       if req.username.to_s.downcase == username.downcase
         m.reply format_status(req)
@@ -769,7 +736,7 @@ class AdminPlugin
   end
   
   def reqinfo(m, id)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     unless RequestDB.requests.has_key?(id.to_i)
       m.reply "Error: request ##{id} not found."
       return
@@ -786,7 +753,7 @@ class AdminPlugin
   end
   
   def delete(m, id)
-    return unless m.channel == "#bnc.im-admin"
+    return unless command_allowed(m)
     unless RequestDB.requests.has_key?(id.to_i)
       m.reply "Error: request ##{id} not found."
       return
@@ -797,8 +764,7 @@ class AdminPlugin
   end
 
   def pending(m)
-    return unless m.channel == "#bnc.im-admin"
-    
+    return unless command_allowed(m)
     pending = RequestDB.requests.values.select { |r| r.status == 1 }
     
     if pending.empty?
@@ -814,8 +780,7 @@ class AdminPlugin
   end
   
   def reports(m)
-    return unless m.channel == "#bnc.im-admin"
-    
+    return unless command_allowed(m)
     pending = Array.new
     ReportDB.reports.each_value do |r|
       pending << r unless r.cleared?
@@ -832,6 +797,24 @@ class AdminPlugin
       m.reply format_report(report)
     end
   end
+    
+  def unconfirmed(m)
+    return unless command_allowed(m)
+    unconfirmed = RequestDB.requests.values.select { |r| r.status == 0 }
+    
+    if unconfirmed.empty?
+      m.reply "No unconfirmed requests. Try !pending?"
+      return
+    end
+    
+    m.reply "#{unconfirmed.size} unconfirmed request(s):"
+    
+    unconfirmed.each do |request|
+      m.reply format_status(request)
+    end
+  end
+  
+  private
   
   def format_report(r)
     if r.cleared?
@@ -847,23 +830,24 @@ class AdminPlugin
        Format(:bold, r.content.to_s)]
   end
   
-  def unconfirmed(m)
-    return unless m.channel == "#bnc.im-admin"
-    
-    unconfirmed = RequestDB.requests.values.select { |r| r.status == 0 }
-    
-    if unconfirmed.empty?
-      m.reply "No unconfirmed requests. Try !pending?"
-      return
-    end
-    
-    m.reply "#{unconfirmed.size} unconfirmed request(s):"
-    
-    unconfirmed.each do |request|
-      m.reply format_status(request)
-    end
+  def msg_to_control(msg)
+    "PRIVMSG *controlpanel :#{msg}"
   end
-  
+    
+  def find_server_by_ip(ip)
+    ips = $config["ips"]
+    ips.each do |server, addrs|
+      addrs.each_value do |addr|
+        addr.each do |a|
+          if a.downcase == ip.downcase
+            return server
+          end
+        end
+      end
+    end
+    return false
+  end
+
   def format_status(r)
     "%s Source: %s on %s / Username: %s / Email: %s / Date: %s / Server: %s / Port: %s / Status: %s" %
       [Format(:bold, "[##{r.id}]"), Format(:bold, r.source.to_s), 
@@ -875,6 +859,15 @@ class AdminPlugin
   
   def adminmsg(text)
     $adminbot.irc.send("PRIVMSG #bnc.im-admin :#{text}")
+  end
+  
+  def command_allowed(m, needs_data = false)
+    return false unless m.channel == "#bnc.im-admin"
+    if needs_data and $userdb.updating?
+      m.reply "#{Format(:bold, "Error:")} user DB is currently updating, please wait a few seconds."
+      return false
+    end
+    return true
   end
   
   def do_block(m, server, user, unblock = false)
@@ -904,5 +897,22 @@ class AdminPlugin
         end
       end
     end
+  end
+  
+  def get_interface_name(ip)
+    ips = $config["ips"]
+    ips.each do |name, addrs|
+      ipv4, ipv6 = addrs["ipv4"], addrs["ipv6"]
+      if ipv4.include? ip
+        return "#{name}-4-#{ipv4.index(ip)}"
+      elsif !ipv6.nil? and ipv6.include? ip 
+        return "#{name}-6-#{ipv6.index(ip)}"
+      end
+    end
+    return ip
+  end
+  
+  def silent_update
+    $userdb.update
   end
 end

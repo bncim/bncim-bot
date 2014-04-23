@@ -141,11 +141,17 @@ module ZNC
   
   class UserDB
     attr_reader :servers, :updated
+    attr_accessor :updating
     
     def initialize(servers)
       @servers = servers
       @updated = nil
+      @updating = false
       Thread.new { update_data() }
+    end
+    
+    def updating?
+      @updating
     end
     
     def username_available?(username)
@@ -242,6 +248,7 @@ module ZNC
     end
     
     def update_data()
+      @updating = true
       @servers.each do |name, server|
         begin
           sock = init_sock(server.username, server.password, server.addr, server.port)
@@ -297,5 +304,6 @@ module ZNC
         end
       end
     end
+    @updating = false
   end
 end

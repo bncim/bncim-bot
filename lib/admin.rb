@@ -99,6 +99,7 @@ class AdminPlugin
   match "unconfirmed", method: :unconfirmed
   match "reports", method: :reports
   match /fverify\s+(\d+)/, method: :fverify
+  match "connectall", method: :connectall
   match "servers", method: :servers
   match /broadcast (.+)/, method: :broadcast
   match /sbroadcast (\w+) (.+)/, method: :serverbroadcast
@@ -199,7 +200,7 @@ class AdminPlugin
     m.reply "#{Format(:bold, "[USERS]")} !addnet <server> <username> <netname> <addr> <port> | !delnet <server> <username> <netname> | !blocked | ![un]block <server> <user>"
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !net <network> | !cp <server> <command> | !sbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
-    m.reply "#{Format(:bold, "[MISC]")} !todo | !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
+    m.reply "#{Format(:bold, "[MISC]")} !connectall | !todo | !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
     m.reply "#{Format(:bold, "[NOTES]")} !note | !note list <category> | !note add <category> | !note del <category> | !note add <category> <item> | !note del <category> <num> | !netnote <netname> [newnote]" 
     
   end 
@@ -284,6 +285,52 @@ class AdminPlugin
     m.reply "#{total} connections found for /#{str}/. #{offline} are offline."
   end
   
+  def connectall(m)
+    return unless command_allowed(m, true)
+    results = Hash.new([])
+    $userdb.servers.each do |name, server|
+      server.users.each do |username, user|
+        user.networks.each do |network|
+          unless network.online
+            results[name] << [user, network] unless user.blocked?
+          end
+        end
+      end
+    end
+    
+    if results.empty?
+      m.reply "No unblocked offline users to connect."
+      return
+    end
+    
+    results.each do |srv, offline|
+      next if offline.empty?
+      sock = TCPSocket.new($config["zncservers"][srv]["addr"], $config["zncservers"][srv]["port"].to_i)
+      ssl_context = OpenSSL::SSL::SSLContext.new
+      ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      sock = OpenSSL::SSL::SSLSocket.new(sock, ssl_context)
+      sock.sync = true
+      sock.connect
+      sock.puts "NICK bncbot"
+      sock.puts "USER bncbot bncbot bncbot :bncbot"
+      sock.puts "PASS #{$config["zncservers"][server]["username"]}:#{$config["zncservers"][server]["password"]}"
+      
+      offline.each do |user, network|
+        sock.puts "PRIVMSG *controlpanel :reconnect #{user.username} #{network.name}"
+      end
+    
+      Thread.new do
+        Timeout::timeout(20) do
+          while line = sock.gets
+            if line =~ /^:\*controlpanel!znc@bnc\.im PRIVMSG bncbot :(.+)$/
+              m.reply "#{Format(:bold, "[#{server}]")} #{$1}"
+            end
+          end
+        end
+      end
+    end
+  end
+      
   def offline(m)
     return unless command_allowed(m, true)
     results = []

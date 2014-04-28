@@ -22,6 +22,7 @@ require 'lib/mail'
 require 'lib/notes'
 require 'lib/dataparser'
 require 'lib/network'
+require 'lib/monitor'
 
 $config = YAML.load_file("config/config.yaml")
 $bots = Hash.new

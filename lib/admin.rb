@@ -124,11 +124,33 @@ class AdminPlugin
   match /todo\s*$/, method: :todo
   match /net (\S+)/i, method: :network_view
   match /^\-(\S+)$/i, method: :network_view, use_prefix: false
+  match /disconnect\s+([a-z]{3}\d)\s+(\S+)\s+(\S+)\s*/i, method: :disconnect
+  match /connect\s+([a-z]{3}\d)\s+(\S+)\s+(\S+)\s*/i, method: :connect
   
   timer 120, method: :silent_update
   
   match "help", method: :help
-    
+  
+  def connect(m, server, user, network)
+    return unless command_allowed(m, true)
+    server.downcase!
+    if $userdb.servers.has_key? server
+      do_connect(m, server, user, network)
+    else
+      m.reply "#{Format(:bold, "Error:")} server #{server} not found."
+    end
+  end
+  
+  def disconnect(m, server, user, network)
+    return unless command_allowed(m, true)
+    server.downcase!
+    if $userdb.servers.has_key? server
+      do_connect(m, server, user, network, true)
+    else
+      m.reply "#{Format(:bold, "Error:")} server #{server} not found."
+    end
+  end
+  
   def block(m, server, user)
     return unless command_allowed(m, true)
     server.downcase!
@@ -873,6 +895,33 @@ class AdminPlugin
     else
       m.reply "#{Format(:bold, "Error:")} you are not authorised to use this command, bitch."
       return false
+    end
+  end
+  
+  def do_connect(m, server, user, network, disconnect = false)
+    sock = TCPSocket.new($config["zncservers"][server]["addr"], $config["zncservers"][server]["port"].to_i)
+    ssl_context = OpenSSL::SSL::SSLContext.new
+    ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    sock = OpenSSL::SSL::SSLSocket.new(sock, ssl_context)
+    sock.sync = true
+    sock.connect
+    sock.puts "NICK bncbot"
+    sock.puts "USER bncbot bncbot bncbot :bncbot"
+    sock.puts "PASS #{$config["zncservers"][server]["username"]}:#{$config["zncservers"][server]["password"]}"
+    if disconnect
+      sock.puts "PRIVMSG *controlpanel :disconnect #{user} #{network}"
+    else
+      sock.puts "PRIVMSG *controlpanel :connect #{user} #{network}"
+    end
+    
+    Thread.new do
+      Timeout::timeout(10) do
+        while line = sock.gets
+          if line =~ /^:\*status!znc@bnc\.im PRIVMSG bncbot :(.+)$/
+            m.reply "#{Format(:bold, "[#{server}]")} #{$1}"
+          end
+        end
+      end
     end
   end
   

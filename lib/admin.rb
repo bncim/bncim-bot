@@ -911,7 +911,7 @@ class AdminPlugin
     if disconnect
       sock.puts "PRIVMSG *controlpanel :disconnect #{user} #{network}"
     else
-      sock.puts "PRIVMSG *controlpanel :connect #{user} #{network}"
+      sock.puts "PRIVMSG *controlpanel :reconnect #{user} #{network}"
     end
     
     Thread.new do

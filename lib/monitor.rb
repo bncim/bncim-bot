@@ -14,11 +14,11 @@ class MonitorPlugin
   listen_to :disconnect, method: :disconnect
   
   def connect(m)
-    adminmsg(Format(:bold, :green, "[CONNECTED] ") + @bot.irc.network.name.to_s)
+    adminmsg(Format(:bold, :green, "[CONNECTED] ") + @bot.config.server.to_s)
   end
   
   def disconnect(m)
-    adminmsg(Format(:bold, :red, "[DISCONNECTED] ") + @bot.irc.network.name.to_s)
+    adminmsg(Format(:bold, :red, "[DISCONNECTED] ") + @bot.config.server.to_s)
   end
   
   def adminmsg(text)

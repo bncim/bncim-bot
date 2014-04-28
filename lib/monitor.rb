@@ -17,7 +17,7 @@ class MonitorPlugin
     adminmsg(Format(:bold, :green, "[CONNECTED] ") + @bot.irc.network.name.to_s)
   end
   
-  def connect(m)
+  def disconnect(m)
     adminmsg(Format(:bold, :red, "[DISCONNECTED] ") + @bot.irc.network.name.to_s)
   end
   

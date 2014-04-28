@@ -218,7 +218,7 @@ class AdminPlugin
     return unless command_allowed(m)
     m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !approve <id> <interface> [network name] [irc server] [irc port]"
     m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
-    m.reply "#{Format(:bold, "[USERS]")} !addnet <server> <username> <netname> <addr> <port> | !delnet <server> <username> <netname> | !blocked | ![un]block <server> <user>"
+    m.reply "#{Format(:bold, "[USERS]")} ![dis]connect <server> <user> <networK> | !addnet <server> <username> <netname> <addr> <port> | !delnet <server> <username> <netname> | !blocked | ![un]block <server> <user>"
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !net <network> | !cp <server> <command> | !sbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
     m.reply "#{Format(:bold, "[MISC]")} !connectall | !todo | !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
@@ -917,7 +917,7 @@ class AdminPlugin
     Thread.new do
       Timeout::timeout(10) do
         while line = sock.gets
-          if line =~ /^:\*status!znc@bnc\.im PRIVMSG bncbot :(.+)$/
+          if line =~ /^:\*controlpanel!znc@bnc\.im PRIVMSG bncbot :(.+)$/
             m.reply "#{Format(:bold, "[#{server}]")} #{$1}"
           end
         end

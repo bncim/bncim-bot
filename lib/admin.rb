@@ -1,7 +1,7 @@
 ####
 ## bnc.im administration bot
 ##
-## Copyright (c) 2013 Andrew Northall
+## Copyright (c) 2013, 2014 Andrew Northall
 ##
 ## MIT License
 ## See LICENSE file for details.
@@ -923,6 +923,7 @@ class AdminPlugin
         end
       end
     end
+    $userdb.update
   end
   
   def do_block(m, server, user, unblock = false)

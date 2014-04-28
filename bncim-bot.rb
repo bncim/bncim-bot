@@ -65,6 +65,8 @@ $config["zncservers"].each do |name, server|
 			c.ssl.use = server["ssl"]
 			c.password = server["username"] + ":" + server["password"]
 			c.port = server["port"]
+      c.max_reconnect_delay = 15
+      c.plugins.plugins = [MonitorPlugin]
 		end
 	end
   bot.loggers.clear

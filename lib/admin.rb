@@ -137,7 +137,7 @@ class AdminPlugin
     return unless command_allowed(m, true)
     users = Array.new
     networks = Hash.new(0)
-    $userdb.servers.map { |k, s| u = u + s.users.values }
+    $userdb.servers.map { |k, s| users = users + s.users.values }
     
     users.each do |user|
       user.networks.each do |network|

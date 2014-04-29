@@ -103,8 +103,8 @@ class AdminPlugin
   match /broadcast (.+)/, method: :broadcast
   match /sbroadcast (\w+) (.+)/, method: :serverbroadcast
   match /cp (\w+) (.+)/, method: :cp
-  match /addnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s+(.+)\s*$/, method: :addnetwork
-  match /delnetwork\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnetwork
+  match /addnet\s+(\w+)\s+(\w+)\s+(\w+)\s+(.+)\s*$/, method: :addnetwork
+  match /delnet\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnetwork
   match "stats", method: :stats
   match /find (\S+)$/, method: :find, group: :find
   match /find (\S+) ([a-z]{3}\d)/, method: :find, group: :find
@@ -448,7 +448,7 @@ class AdminPlugin
     m.reply "[Stats] #{servers.join(" | ")}"
   end
   
-  def addnetwork(m, server, username, netname, addrstr)
+  def addnet(m, server, username, netname, addrstr)
     return unless command_allowed(m)
     server.downcase!
     netname.downcase!
@@ -465,7 +465,7 @@ class AdminPlugin
     $userdb.update
   end
   
-  def delnetwork(m, server, username, netname)
+  def delnet(m, server, username, netname)
     return unless command_allowed(m)
     server.downcase!
     netname.downcase!

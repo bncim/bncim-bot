@@ -145,7 +145,7 @@ class AdminPlugin
       end
     end
     
-    networks = networks.sort_by { |k, v| v }
+    networks = networks.sort_by { |k, v| v }.reverse
    
     limit = networks.size - 1 if limit > networks.size
    

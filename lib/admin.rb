@@ -151,7 +151,7 @@ class AdminPlugin
    
     limit.times do |num|
       name, count = networks.shift
-      m.reply Format(:bold, "[#{num}]") + " #{name} - #{count} users"
+      m.reply Format(:bold, "[#{num + 1}]") + " #{name} - #{count} users"
     end
   end
   

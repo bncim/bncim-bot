@@ -126,10 +126,34 @@ class AdminPlugin
   match /^\-(\S+)$/i, method: :network_view, use_prefix: false
   match /disconnect\s+([a-z]{3}\d)\s+(\S+)\s+(\S+)\s*/i, method: :disconnect
   match /connect\s+([a-z]{3}\d)\s+(\S+)\s+(\S+)\s*/i, method: :connect
+  match /networks\s*$/i, method: :networks
+  match /networks\s+(\d+)\s*$/i, method: :networks
   
   timer 120, method: :silent_update
   
   match "help", method: :help
+  
+  def networks(m, limit = 10)
+    return unless command_allowed(m, true)
+    users = Array.new
+    networks = Hash.new(0)
+    $userdb.servers.map { |k, s| u = u + s.users.values }
+    
+    users.each do |user|
+      user.networks.each do |network|
+        networks[network.name.downcase] += 1
+      end
+    end
+    
+    networks.sort_by! { |k, v| v }
+   
+    limit = networks.size - 1 if limit > networks.size
+   
+    limit.times do |num|
+      name, count = networks.shift
+      m.reply Format(:bold, "[1]") + " #{name} - #{count} users"
+    end
+  end
   
   def connect(m, server, user, network)
     return unless command_allowed(m, true)

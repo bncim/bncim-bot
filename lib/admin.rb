@@ -137,7 +137,8 @@ class AdminPlugin
     return unless command_allowed(m, true)
     users = Array.new
     networks = Hash.new(0)
-    limit.to_i!
+    limit = limit.to_i
+    
     $userdb.servers.map { |k, s| users = users + s.users.values }
     
     users.each do |user|

@@ -242,11 +242,11 @@ class AdminPlugin
   
   def help(m)
     return unless command_allowed(m)
-    m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !fverify <id> | !approve <id> <interface> [network name] [irc server] [irc port]"
+    m.reply "#{Format(:bold, "[REQUESTS]")} !unconfirmed | !pending | !reqinfo <id> | !requser <name> | !delete <id> | !reject <id> [reason] | !fverify <id> | !approve <id> <interface> [network name] [irc server] [irc port]"
     m.reply "#{Format(:bold, "[REPORTS]")} !reports | !clear <reportid> [message] | !reportid <id>"
     m.reply "#{Format(:bold, "[USERS]")} ![dis]connect <server> <user> <networK> | !addnet <server> <username> <netname> <addr> <port> | !delnet <server> <username> <netname> | !blocked | ![un]block <server> <user>"
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !net <network> | !cp <server> <command> | !sbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
-    m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline"
+    m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline | !networks [num]"
     m.reply "#{Format(:bold, "[MISC]")} !connectall | !todo | !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
     m.reply "#{Format(:bold, "[NOTES]")} !note | !note list <category> | !note add <category> | !note del <category> | !note add <category> <item> | !note del <category> <num> | !netnote <netname> [newnote]" 
     

@@ -103,8 +103,8 @@ class AdminPlugin
   match /broadcast (.+)/, method: :broadcast
   match /sbroadcast (\w+) (.+)/, method: :serverbroadcast
   match /cp (\w+) (.+)/, method: :cp
-  match /addnet\s+(\w+)\s+(\w+)\s+(\w+)\s+(.+)\s*$/, method: :addnet
-  match /delnet\s+(\w+)\s+(\w+)\s+(\w+)\s*$/, method: :delnet
+  match /addnet\s+(\w+)\s+(\S+)\s+(\S+)\s+(.+)\s*$/, method: :addnet
+  match /delnet\s+(\w+)\s+(\S+)\s+(\S+)\s*$/, method: :delnet
   match "stats", method: :stats
   match /find (\S+)$/, method: :find, group: :find
   match /find (\S+) ([a-z]{3}\d)/, method: :find, group: :find

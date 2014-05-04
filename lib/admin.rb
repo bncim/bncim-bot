@@ -443,12 +443,12 @@ class AdminPlugin
   
   def stats(m)
     return unless command_allowed(m, true)
-    m.reply "[Stats] Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count} | Offline networks: #{$userdb.offline_networks_count}"
+    m.reply "#{Format(:bold, "[Stats]")} Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count} | Offline networks: #{$userdb.offline_networks_count}"
     servers = []
     $userdb.servers.each do |name, server|
       servers << "#{name}: #{server.users_count}u/#{server.networks_count}n/#{server.offline_networks_count}o"
     end
-    m.reply "[Stats] #{servers.join(" | ")}"
+    m.reply "#{Format(:bold, "[Stats]")} #{servers.join(" | ")}"
   end
   
   def addnet(m, server, username, netname, addrstr)

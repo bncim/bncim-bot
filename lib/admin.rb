@@ -91,6 +91,9 @@ class AdminPlugin
   match /approve\s+(\d+)\s+(\S+)\s*$/, method: :approve, group: :approve
   match /approve\s+(\d+)\s+(\S+)\s+([a-zA-Z\-]+)\s*$/, method: :approve, group: :approve
   match /approve\s+(\d+)\s+(\S+)\s+([a-zA-Z\-]+)\s+(.+)\s*$/, method: :approve, group: :approve
+  match /accept\s+(\d+)\s+(\S+)\s*$/, method: :approve, group: :approve
+  match /accept\s+(\d+)\s+(\S+)\s+([a-zA-Z\-]+)\s*$/, method: :approve, group: :approve
+  match /accept\s+(\d+)\s+(\S+)\s+([a-zA-Z\-]+)\s+(.+)\s*$/, method: :approve, group: :approve
   match /reject\s+(\d+)\s+(.+)\s*$/, method: :reject
   match /delete\s+(\d+)/, method: :delete
   match /reqinfo\s+(\d+)/, method: :reqinfo
@@ -247,7 +250,7 @@ class AdminPlugin
     m.reply "#{Format(:bold, "[USERS]")} ![dis]connect <server> <user> <networK> | !addnet <server> <username> <netname> <addr> <port> | !delnet <server> <username> <netname> | !blocked | ![un]block <server> <user>"
     m.reply "#{Format(:bold, "[MANAGEMENT]")} !net <network> | !cp <server> <command> | !sbroadcast <server> <text> | !broadcast <text> | !kick <user> <reason> | !ban <mask> | !unban <mask> | !topic <topic>"
     m.reply "#{Format(:bold, "[ZNC DATA]")} !find <user regexp> | !findnet <regexp> | !netcount <regexp> | !stats | !update | !data | !offline | !networks [num]"
-    m.reply "#{Format(:bold, "[MISC]")} !connectall | !todo | !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
+    m.reply "#{Format(:bold, "[MISC]")} !todo | !crawl <server> <port> | !servers | !seeip <interface> | !seeinterface <ip> | !genpass <len>" 
     m.reply "#{Format(:bold, "[NOTES]")} !note | !note list <category> | !note add <category> | !note del <category> | !note add <category> <item> | !note del <category> <num> | !netnote <netname> [newnote]" 
     
   end 
@@ -440,10 +443,10 @@ class AdminPlugin
   
   def stats(m)
     return unless command_allowed(m, true)
-    m.reply "[Stats] Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count}"
+    m.reply "[Stats] Total users: #{$userdb.users_count} | Total networks: #{$userdb.networks_count} | Offline networks: #{$userdb.offline_networks_count}"
     servers = []
     $userdb.servers.each do |name, server|
-      servers << "#{name}: #{server.users_count}/#{server.networks_count}"
+      servers << "#{name}: #{server.users_count}u/#{server.networks_count}n/#{server.offline_networks_count}o"
     end
     m.reply "[Stats] #{servers.join(" | ")}"
   end

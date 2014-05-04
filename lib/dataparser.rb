@@ -46,6 +46,16 @@ module ZNC
       return networks
     end
     
+    def offline_networks_count
+      networks = 0
+      @users.each do |username, user|
+        user.networks.each do |network|
+          networks += 1 unless network.online
+        end
+      end
+      return networks
+    end
+    
     def conns_for_network(seeknet)
       result = 0
       @users.each do |username, user|
@@ -223,6 +233,14 @@ module ZNC
         server.users.each do |username, user|
           networks += user.networks.size
         end
+      end
+      return networks
+    end
+    
+    def offline_networks_count
+      networks = 0
+      @servers.each do |name, server|
+        networks += server.offline_networks_count
       end
       return networks
     end

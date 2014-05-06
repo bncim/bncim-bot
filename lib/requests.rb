@@ -315,6 +315,12 @@ class RequestPlugin
     
     results = NetworkDB.network_view(netname)    
     results.each { |l| adminmsg l }
+    
+    servers = []
+    $userdb.servers.each do |name, server|
+      servers << "#{name}: #{server.networks_count} networks"
+    end
+    adminmsg "#{Format(:bold, "[Stats]")} #{servers.join(" | ")}"
   end  
   
   def help(m)

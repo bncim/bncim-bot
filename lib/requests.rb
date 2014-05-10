@@ -11,6 +11,7 @@
 require 'cinch'
 require 'domainatrix'
 require 'csv'
+require 'securerandom'
 
 class RequestDB
   @@requests = Hash.new
@@ -84,7 +85,7 @@ class RequestDB
   end
 
   def self.gen_key(length = 10)
-    ([nil]*length).map { ((48..57).to_a+(65..90).to_a+(97..122).to_a).sample.chr }.join
+    SecureRandom::urlsafe_base64(length)
   end
 
   def self.confirm(id)

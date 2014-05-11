@@ -218,6 +218,11 @@ class AdminPlugin
   
   def genpass(m, len)
     return unless command_allowed(m)
+    if len.to_i > 100
+      Channel(m.channel).kick(m.user)
+      return
+    end
+    
     m.reply RequestDB.gen_key(len.to_i)
   end
   

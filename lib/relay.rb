@@ -208,7 +208,7 @@ class RelayPlugin
     target.notice("Total users across #{$bots.size} channels: #{total_users}. Unique nicknames: #{unique_users.size}.")
   end
   
-  def send_relay(m)
+  def send_relay(m, adminonly = false)
     $bots.each do |network, bot|
       unless bot.irc.network.name.to_s.downcase == @bot.irc.network.name.to_s.downcase
         begin

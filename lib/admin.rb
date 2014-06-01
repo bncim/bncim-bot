@@ -131,10 +131,30 @@ class AdminPlugin
   match /connect\s+([a-z]{3}\d)\s+(\S+)\s+(\S+)\s*/i, method: :connect
   match /networks\s*$/i, method: :networks
   match /networks\s+(\d+)\s*$/i, method: :networks
+  match "connectall", method: :connectall
   
   timer 120, method: :silent_update
   
   match "help", method: :help
+  
+  def connectall(m)
+    return unless command_allowed(m, true)
+    results = []
+    $userdb.servers.each do |name, server|
+      server.users.each do |username, user|
+        next if user.blocked?
+        user.networks.each do |network|
+          unless network.online
+            results << [user, network]
+          end
+        end
+      end
+    end
+    m.reply "Attempting to reconnect #{results.size} offline networks."
+    results.each do |user, network|
+      do_connect(m, user.server, user.username, network.name)
+    end
+  end
   
   def networks(m, limit = 10)
     return unless command_allowed(m, true)

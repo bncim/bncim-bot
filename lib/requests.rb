@@ -227,6 +227,12 @@ class RequestPlugin
   
   def request(m, username, email, server, port)
     return if RequestDB.ignored?(m.user.mask)
+  
+    if $config["requestsopen"] == false
+      m.reply "#{Format(:bold, "Error:")} Requests are currently closed. The bnc.im staff can recommend EliteBNC (#elitebnc on freenode or http://elitebnc.org) to users who require a free IRC bouncer."
+      return
+    end
+    
     if RequestDB.email_used?(email)
       m.reply "#{Format(:bold, "Error:")} That email has already been used. We only permit one account per user. If you " + \
               "need to add a network, use !report."

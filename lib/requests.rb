@@ -228,7 +228,7 @@ class RequestPlugin
   def request(m, username, email, server, port)
     return if RequestDB.ignored?(m.user.mask)
   
-    if $config["requestsopen"] == false
+    if $config["requestsopen"] == "no"
       m.reply "#{Format(:bold, "Error:")} Requests are currently closed. The bnc.im staff can recommend EliteBNC (#elitebnc on freenode or http://elitebnc.org) to users who require a free IRC bouncer."
       return
     end

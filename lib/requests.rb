@@ -228,10 +228,8 @@ class RequestPlugin
   def request(m, username, email, server, port)
     return if RequestDB.ignored?(m.user.mask)
   
-    if $config["requestsopen"] == "no"
-      m.reply "#{Format(:bold, "Error:")} Requests are currently closed. The bnc.im staff can recommend EliteBNC (#elitebnc on freenode or http://elitebnc.org) to users who require a free IRC bouncer."
-      return
-    end
+    m.reply "#{Format(:bold, "Error:")} Requests are currently closed. The bnc.im staff can recommend EliteBNC (#elitebnc on freenode or http://elitebnc.org) to users who require a free IRC bouncer."
+    return
     
     if RequestDB.email_used?(email)
       m.reply "#{Format(:bold, "Error:")} That email has already been used. We only permit one account per user. If you " + \
@@ -331,6 +329,8 @@ class RequestPlugin
   end  
   
   def help(m)
+    m.reply "#{Format(:bold, "Error:")} Requests are currently closed. The bnc.im staff can recommend EliteBNC (#elitebnc on freenode or http://elitebnc.org) to users who require a free IRC bouncer."
+    return
     return if m.channel == "#bnc.im-admin"
     m.reply "#{Format(:bold, "Syntax: !request <user> <email> <server> <port>")}. A + before the port denotes SSL. This command can be issued in a private message. Please use a valid email, it is verified. If you already have an account and wish to add a new network, use !report."
     m.reply Format(:bold, "Example: !request george george@mail.com irc.freenode.net +6697")
